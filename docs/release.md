@@ -106,6 +106,37 @@ set the Play Console target audience and content rating accordingly.
 set (phone screenshots, feature graphic, icon) is generated from them, see "Store listing
 assets" below.
 
+## Upload key on record (created 2026-08-29)
+
+The one key every Play update must be signed with. Password and keystore are NOT in git.
+
+| Item | Value |
+|---|---|
+| Keystore | `android/upload-keystore.jks` (PKCS12, gitignored, mode 600) |
+| Properties | `android/key.properties` (gitignored, mode 600); `storePassword` and `keyPassword` are identical |
+| Alias | `upload` |
+| Owner | `CN=Boxer OS, OU=Mobile, O=prdy, C=IN` |
+| Algorithm | RSA 2048, SHA256withRSA |
+| Valid | 2026-08-29 to 2054-01-14 |
+| Certificate SHA-256 | `C7:A5:08:DE:33:79:C0:28:34:91:B4:0B:81:43:24:8C:38:31:4D:84:1F:35:B5:32:1E:80:0C:88:14:6E:9D:27` |
+| First signed build | 0.1.0+1, `app-release.aab` 44.7 MB, `app-release.apk` 54.0 MB |
+
+Play Console uses this fingerprint to identify the upload key (App integrity > App signing >
+Upload key certificate). With Play App Signing, Google holds the app signing key and only this
+upload key needs to stay safe; if it is ever lost, request an upload key reset from the Console
+before it is needed rather than after.
+
+Backups: keep the `.jks` and the password in at least two places off this machine (password
+manager plus an encrypted drive). Never convert the keystore between JKS and PKCS12 or
+regenerate it: the fingerprint would change and Play would reject the update.
+
+Quick checks:
+
+```
+keytool -list -v -keystore android/upload-keystore.jks -alias upload   # prompts for the password
+apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk | grep -E "DN|SHA-256"
+```
+
 ## Store listing assets
 
 `python3 tool/store_assets.py <captures folder>` turns raw 1080x2400 device captures (named
