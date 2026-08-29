@@ -56,7 +56,7 @@ Primary navigation (four tabs):
 | Skills | combinations, reaction, defense, footwork drills |
 | Progress | training analytics, skill progression, records |
 
-Secondary: fighter profile, journal / history, settings, workout library.
+Secondary: fighter profile, history (the session log, called "Journal" in the concept), settings, workout library.
 
 ## Modules
 
@@ -75,12 +75,12 @@ Secondary: fighter profile, journal / history, settings, workout library.
 
 | Area | V1 | Later |
 |---|---|---|
-| Home | **today's workout, quick start, streak, weekly snapshot** | recommendations from weak-skill history, XP and levels |
+| Home | **today's workout (least-recently-trained type), quick actions, streak, weekly snapshot, quote and fact of the day, onboarding on first launch** | recommendations from weak-skill history, XP and levels |
 | Training | **configurable round timer, guided workouts from a bundled library, custom session builder, bells, haptics, 10 s and final-30 s cues** | voice coaching, pace changes mid-round, wearables |
-| Skills | **combination generator (stance, difficulty), basic reaction trainer, footwork drills** | defense drills, combination memory, video technique analysis |
-| Progress | **rounds, training minutes, streak, session history, basic skill progression** | reaction-time trends, personal records, richer analytics |
-| Journal | **post-session rating, notes, sparring notes** | opponent profiles, recurring-weakness detection |
-| Profile / settings | **stance, level, sound and haptic preferences** | fighter profile, weight and recovery tracking |
+| Skills | **60-combination library with a boxing-grammar generator, bookmarks and practice sessions; reaction trainer (Tap, Direction, Defense, Go / No-go; Endurance 60 format); footwork drills** | combination memory, ears-only and two-player reaction, move animations (designer clips), video technique analysis |
+| Progress | **rounds and minutes this week, streak, 7-day chart, split by type, reaction bests per mode and endurance decay, milestone badges, journal** | personal records, richer analytics |
+| History (journal) | **post-session rating, what worked, what needs work, sparring opponent notes; session list and detail** | opponent profiles, recurring-weakness detection |
+| Profile / settings | **name, stance, level, sound / haptics / voice / keep-screen-on, voice test, daily reminder and streak nudge, clear history** | weight and recovery tracking |
 | Platform | **offline, local-first, no account** | cloud sync, coach/club workflows |
 
 ## Roadmap ideas (not planned)
@@ -102,18 +102,34 @@ Secondary: fighter profile, journal / history, settings, workout library.
 - Notifications: local only, no push.
 - Android-first. The repository is Android-only today; nothing in the design should preclude iOS.
 
-## Open questions (from the concept, decide before or during the first builds)
+## Answered questions (2026-08-29, with the product owner)
 
-1. Which segment does V1 target first: beginners, recreational boxers, competitive amateurs, or coaches?
-2. Should the primary in-training interaction be visual, audio, haptic, or a combination? (Working
-   assumption: audio and haptic carry every cue; the screen is the fallback.)
-3. What minimum workout library makes the app useful on day one?
-4. Which metrics are actionable rather than vanity metrics?
-5. How should recommendations be generated from local training history?
-6. Which native capabilities are required: background audio, wake lock, haptics, local notifications?
-7. What is configurable by the boxer versus fixed by the workout designer?
-8. Which features are deliberately excluded from V1 to preserve focus?
+The concept document's eight questions, settled before the first build:
 
-Suggested first exercise: map one scenario end to end, "a boxer opens Boxer OS at the gym at
-6:00 AM and wants to complete a 45-minute session without repeatedly looking at the phone",
-identify the smallest lovable V1, and prototype the training screen first.
+1. **Segment.** All three at once: beginners, competitive amateurs and pros. The library ships
+   beginner, intermediate and advanced workouts side by side; drills carry a difficulty picker;
+   the beginner path stays the default.
+2. **In-training interaction.** Audio and haptics carry every cue, the screen is a huge glanceable
+   fallback. Combination prompts are spoken with the phone's on-device text-to-speech engine
+   (`flutter_tts`, offline), bells and beeps are bundled WAVs, haptics use `HapticFeedback`.
+3. **Minimum library.** Twelve bundled workouts: at least one per training type plus signature
+   guided sessions with per-round cues, and a configurable quick timer.
+4. **Actionable metrics.** Rounds and minutes per week, streak, split by type (shadow / bag /
+   sparring), reaction-time best and average. No calories, no invented scores.
+5. **Recommendations.** A local rule: least-recently-trained type, or yesterday's workout when the
+   streak is at risk. No ML.
+6. **Native capabilities.** Wake lock (screen stays on for the whole session), haptics, bundled
+   audio, on-device TTS. No foreground service, no notifications in V1: with the screen on,
+   nothing needs to survive screen-off.
+7. **Configurable vs fixed.** The boxer sets rounds, work, rest, warnings, stance and difficulty.
+   The workout designer fixes cue content and order.
+8. **Excluded from V1.** Voice coaching beyond spoken cues, XP and levels, defense drills,
+   combination memory, video, wearables, sync. Gamification is limited to the streak and a small
+   set of milestone badges.
+
+## Look and feel
+
+"Blackout with one hot accent": near-black surfaces, off-white type, a single hot red accent used
+only for live state (active round, primary CTA), a mint secondary for rest and positive stats.
+Bebas Neue for the big numbers and headings, Inter for everything else. Modern, minimal, classy;
+built to attract Gen Z boxers without shouting. Tokens live in `lib/theme/app_theme.dart`.

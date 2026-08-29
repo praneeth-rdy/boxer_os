@@ -2,11 +2,9 @@
 
 How to build a signed Boxer OS for the Play Console.
 
-Last verified against the code: 2026-08-29. **Not yet wired:** `android/app/build.gradle.kts`
-still signs release builds with the debug key. Backlog B-04 adds the `key.properties` flow below;
-until then treat this file as the target setup.
+Last verified against the code: 2026-08-29.
 
-## Signing (target, B-04)
+## Signing
 
 Release builds use an upload key when `android/key.properties` exists and fall back to the debug
 key otherwise, so a fresh checkout (or CI without secrets) still builds. Both the properties file
@@ -26,7 +24,7 @@ with the same upload key; losing it means you cannot ship an update to the exist
 
 ### 2. Fill in `android/key.properties`
 
-Copy `android/key.properties.example` (added by B-04) to `android/key.properties` and fill it in:
+Copy `android/key.properties.example` to `android/key.properties` and fill it in:
 
 ```
 storePassword=<store password>
@@ -50,10 +48,22 @@ Upload the `.aab` to Play; the `.apk` is for sideloading and manual testing.
 ### 4. Verify the signature
 
 ```
-keytool -printcert -jarfile build/app/outputs/flutter-apk/app-release.apk
+$ANDROID_HOME/build-tools/<version>/apksigner verify --print-certs \
+  build/app/outputs/flutter-apk/app-release.apk
 ```
 
-The owner line should name the upload key, not `CN=Android Debug`.
+The `Signer #1 certificate DN` line should name the upload key, not `CN=Android Debug`.
+Use `apksigner`, not `keytool -printcert -jarfile`: the release APK carries only the v2/v3
+signature blocks, so keytool reports "Not a signed jar file" even on a correctly signed build.
+
+## Launcher icon
+
+`android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml` is the adaptive icon (API 26+):
+`@mipmap/ic_launcher_foreground` over the `ic_launcher_background` colour in
+`res/values/colors.xml`. Below API 26 the legacy `mipmap-<density>/ic_launcher.png` files are
+used. All of them are copies of the sources in `assets/icon/`; regenerate those first, then copy
+each `ic_launcher_<density>.png` and `ic_launcher_foreground_<density>.png` into the matching
+`mipmap-<density>/` folder. `assets/icon/play_store_512.png` is the Play listing icon.
 
 ## Release checklist
 
@@ -66,3 +76,42 @@ The owner line should name the upload key, not `CN=Android Debug`.
   - Permissions: list only what the manifest declares (wake lock, vibrate, and any foreground
     service or notification permission added for sessions) with a one-line reason each.
 - Attach the release notes and a screenshot set taken on a device, not the emulator.
+
+## Play Console notes
+
+**Data safety.** Boxer OS collects nothing and shares nothing. There is no account, no backend,
+no analytics SDK in the dependency tree; every workout, session record, rating and preference
+stays in the app's local storage on the device. The Play Console data safety form can be filled
+in as: no data collected, no data shared.
+
+**Permissions.** Checked with `aapt dump permissions` against
+`build/app/outputs/flutter-apk/app-debug.apk` (the current debug build), which reflects what the
+plugin manifests merge in beyond `AndroidManifest.xml`:
+
+| Permission | Reason |
+|---|---|
+| `POST_NOTIFICATIONS` | daily reminder and streak nudge, declared in `AndroidManifest.xml` |
+| `RECEIVE_BOOT_COMPLETED` | reschedules reminders after the device restarts, declared in `AndroidManifest.xml` |
+| `VIBRATE` | round-change haptics, merged in from a plugin manifest |
+| `INTERNET` | merged in from a plugin manifest; unused at runtime since the app makes no network calls |
+
+`WAKE_LOCK` is not present in this build; the session screen keeps the device awake through
+`wakelock_plus`, and if a later version of that plugin declares the permission, re-run the
+`aapt` command above before shipping.
+
+**Target audience.** 18+ fitness. The app targets boxers training on their own, not children;
+set the Play Console target audience and content rating accordingly.
+
+**Screenshots.** Raw device captures live under `docs/screenshots/`; the framed Play listing
+set (phone screenshots, feature graphic, icon) is generated from them, see "Store listing
+assets" below.
+
+## Store listing assets
+
+`python3 tool/store_assets.py <captures folder>` turns raw 1080x2400 device captures (named
+`home.png`, `session.png`, `train.png`, `combos.png`, `reaction.png`, `progress.png`,
+`journal.png`, `reminders.png`) into the Play listing set under `screenshots/` (gitignored):
+framed 1080x1920 phone screenshots with a headline each, a hero frame with two phones, the
+1024x500 feature graphic, and the 512 px icon. Play accepts PNG up to 3840 px with the long
+side at most twice the short side, which is why the raw captures are framed rather than
+uploaded as they are. Needs Python 3 with Pillow.

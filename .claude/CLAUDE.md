@@ -19,15 +19,16 @@ Tagline: "Train. Fight. Improve. Repeat."
   `android/app/src/main/kotlin/com/prdy/boxer_os/` (`MainActivity.kt`, currently the stock
   `FlutterActivity`). No MethodChannel exists yet; if one is added, name it `boxer_os/<area>` and
   document it in `docs/architecture.md`.
-- Intended app stack (adopt each dependency in the handoff package that first needs it, never
-  ahead of time): `provider` (ChangeNotifier) for state, `shared_preferences` for preferences,
-  a local store for session history (open decision, see `docs/backlog.md` D-01), bundled audio
-  for bells and cues, Flutter's `HapticFeedback` for haptics, a wake lock during sessions.
+- App stack: `provider` (ChangeNotifier) for state, `shared_preferences` for preferences and
+  history (JSON lists behind `HistoryStore`), `audioplayers` for the bundled bells, `flutter_tts`
+  for spoken cues, `HapticFeedback` for haptics, `wakelock_plus` during sessions,
+  `flutter_local_notifications` + `timezone` + `flutter_timezone` for reminders. New dependencies
+  only through a handoff package that names the reason and version.
 - Lints: `flutter_lints` via `analysis_options.yaml`.
 - Version: `pubspec.yaml` `0.1.0+1`. Once an in-app version string exists it lives on
   `AppTheme.appVersion` and is kept in step with `pubspec.yaml`.
-- Current state (2026-08-29): `lib/main.dart` and `test/widget_test.dart` are still the
-  `flutter create` counter template. Backlog B-01 replaces them.
+- Current state (2026-08-29, evening): V1 is built (runs 1 to 6 under `.claude/handoffs/`);
+  `docs/backlog.md` lists what is done and what is left. Tests live under `test/` mirroring `lib/`.
 
 ## Commands
 
@@ -37,24 +38,26 @@ Tagline: "Train. Fight. Improve. Repeat."
 | Static analysis | `flutter analyze` | Baseline (2026-08-29): 0 issues on the scaffold. Don't add new issues. |
 | Tests | `flutter test` | `test/` mirrors `lib/` (models, providers, services, pages, widgets). |
 | Format | `dart format lib test` | |
-| Smoke build | `flutter build apk --debug` | Release signing is not wired yet (backlog B-04); `docs/release.md` describes the target setup. |
+| Smoke build | `flutter build apk --debug` | Release builds sign with `android/key.properties` when present, the debug key otherwise; `docs/release.md` has the steps. |
 | Run | `flutter run` | Needs a connected Android device/emulator. Test bells and haptics on a physical device. |
 
 ## Architecture
 
 Canonical description: `docs/architecture.md` (target layout, module map, data flow, persistence).
-Short version of the target: `main.dart` -> `MultiProvider(SettingsProvider, SessionProvider,
-HistoryProvider, ...)` -> an app shell with four tabs (Home, Train, Skills, Progress). Pages and
+Short version: `main.dart` -> `MultiProvider(SettingsProvider, SessionProvider, HistoryProvider,
+ReactionProvider, CombosProvider, ShellProvider, ...)` -> onboarding on first launch, then an app
+shell with four tabs (Home, Train, Skills, Progress). Pages and
 widgets talk to providers; providers hold state and orchestration; services talk to the platform
 (storage, audio, haptics, wake lock); bundled workout and drill definitions live under `lib/data/`
-as Dart constants or bundled JSON. The session timer engine is a provider driven by one
-`Timer.periodic`, never by widget rebuilds. Only files that exist are listed in the module map;
-the layout above is the plan.
+as Dart constants. The session timer engine is a provider driven by one `Timer.periodic` and a
+wall-clock deadline, never by widget rebuilds. The module map in `docs/architecture.md` lists
+every file.
 
 ## Conventions
 
-- Styling comes from `lib/theme/app_theme.dart` only (created in B-01): colours, spacing, radii and
-  the named `TextStyle`s. New UI references `AppTheme` tokens, never colour or size literals.
+- Styling comes from `lib/theme/app_theme.dart` only: colours, spacing, radii and the named
+  `TextStyle`s; motion tokens from `lib/theme/app_motion.dart`, always through `AppMotion.of`
+  so reduce-motion is honoured. New UI references `AppTheme` tokens, never colour or size literals.
   Gym-friendly by principle: dark, high contrast, large tap targets (48 dp minimum, bigger on the
   session screen), numbers readable from arm's length.
 - Use `.withValues(alpha: x)`; `withOpacity` is deprecated and must not appear in `lib/`.
