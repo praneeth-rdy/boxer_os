@@ -2,6 +2,8 @@
     <!-- Local training reminders: the prompt on Android 13+ and rescheduling after a reboot. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Gym Wall: sets a rendered poster as the home or lock screen wallpaper. -->
+    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
     <application
         android:label="Boxer OS"
         android:name="${applicationName}"
@@ -28,6 +30,18 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- Gym Wall Live: cycles the rendered posters, one per screen-on. -->
+        <service
+            android:name=".GymWallService"
+            android:exported="true"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/gym_wall"/>
+        </service>
         <!-- flutter_local_notifications: shows scheduled reminders and restores them after a reboot. -->
         <receiver
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"

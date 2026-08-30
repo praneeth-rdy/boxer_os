@@ -34,6 +34,8 @@ flutter:
     - assets/audio/
     - assets/icon/ic_launcher_1024.png
     - assets/legends/
+    - assets/legends/gallery/
+    - assets/wall/
 
   fonts:
     - family: BebasNeue
