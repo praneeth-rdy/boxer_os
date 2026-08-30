@@ -86,3 +86,26 @@ pronunciation after the en-US voice fix.
 | R8-06 | Country and division eyebrow over the legend photos was unreadable on light backgrounds (owner); the label also collided with the name (device). Text moved to a solid block under the photo; story hero is photo only. | fixed: `task-08` |
 | R8-07 | Calendar rows were not tappable (owner). Rows and the Today card open a detail sheet with "Read the legend" for 35 of 39 entries. | fixed: `task-08` |
 | R8-08 | Device pass after task-08 (18 screens): five tab labels fit, Corner sections, legend cards and story hero, calendar sheet and "Read the legend", Quotes filter, Facts, Skills with three cards, About with credits all correct; logcat clean. The privacy link opened the GitHub app (installed on the phone) rather than a browser; expected, and it will resolve to the file once the repository is public. | closed |
+
+## 2026-08-30 Round 9: photos and Gym Wall (`2026-08-30-content`, tasks 09 and 10)
+
+623/623 tests, analyze clean, debug APK 179 MB (release will be smaller; the 24 MB of legend
+assets is the price of HD photos, decision recorded).
+
+| ID | Finding | Status |
+|---|---|---|
+| R9-01 | Two Commons author strings came through as "AnonymousUnknown author" transcription artifacts and would show in credits. | fixed: `task-11` |
+| R9-02 | `PosterPage` captures the visible preview's `RepaintBoundary` instead of an `Offstage` copy (an offstage boundary never paints). Correct; noted so nobody "fixes" it back. | refuted |
+| R9-03 | The archive strip scrolled inside the story page's side padding, clipping photos at the left margin (developer note). Strip now bleeds to the screen edge with inner padding. | fixed: `task-12` |
+| R9-04 | Walkthrough reported Frazier, Robinson and Pacquiao cards "cropped to the chin". The captures show those cards scrolled half off the top of the screen; cards in full view (Foreman, Louis, Mayweather, Kom) frame faces correctly at 1:1. Ali, Frazier and Mayweather galleries, the viewer and the hero all verified. | refuted |
+| R9-05 | Device pass after tasks 09 to 12: archive strip edge to edge, Gym Wall grid, legend and quote posters render with credit, "Set as lock screen" changed the lock screen; home-screen change could not be seen because the phone's launcher draws no wallpaper. Logcat clean. | closed |
+
+## 2026-08-30 Round 10: Gym Wall content and live wallpaper (tasks 13 and 14)
+
+673/673 tests, analyze clean, APK built. Accepted developer calls: the live picker intent is
+started inside try/catch instead of `resolveActivity` (package visibility on Android 11+); a
+cancelled render leaves a partial folder and the service paints ink for missing frames until
+the next full render. Device check pending.
+| R10-01 | First device pass reported the live wallpaper "never activates": the agent tapped Apply on Vivo's preview but not the "Apply to" sheet that follows. Re-tested by the Architect: applying to both screens binds `GymWallService` (`dumpsys wallpaper`: `SET_LIVE`, `mWhich=3`) and three sleep/wake cycles showed three different posters. Page copy updated to name both steps. | fixed: `task-16` |
+| R10-02 | No `GymWall` draw-timing lines in logcat; draws are visibly instant on the device, so the timing criterion is dropped. | wontfix |
+| R10-03 | "Auto-shuffle" renamed "Live wallpaper" (Android's own term); two provider error strings reworded to "poster selection". | fixed: `task-15`, wording follow-up |

@@ -127,7 +127,7 @@ PLAN=[('home','Your corner, in your pocket','corner','Today\'s session, your str
       ('combos','Sixty combinations, real boxing','real','Filter by level and style, bookmark, drill them with spoken cues.',['Grammar-checked','Bookmarks','Practice']),
       ('reaction','Train your reactions','reactions','Eight drills, boxing and pure speed. Sixty seconds of endurance.',['Best and average','Accuracy']),
       ('corner','The corner is open','open','Legends, the boxing calendar and words to train by.',['Twelve legends','39 dates','81 quotes']),
-      ('story','Learn from the legends','legends','What they went through, and what it teaches.',['Stories','Takeaways']),
+      ('wall','Gym Wall','wall','148 posters for your lock and home screen, a new one every time the screen wakes.',['Live wallpaper','Legends','Moments']),
       ('progress','See the work add up','work','Rounds, minutes, streak, milestones. All on your phone, nowhere else.',['7-day chart','Badges'])]
 # Play accepts at most eight phone screenshots: the hero plus these seven.
 

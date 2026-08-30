@@ -75,8 +75,9 @@ cues; a 60-combination library with a boxing-grammar generator, bookmarks and pr
 sessions; a reaction trainer with eight modes (Tap, Direction, Defense, Go / No-go,
 Peripheral, Colour call, Sequence, Sound) plus the Endurance 60 format; ten footwork drills;
 session history with ratings and notes; Progress with streak, weekly chart and milestones;
-the Corner tab with twelve Legends stories, a boxing calendar and a library of 81 quotes and
-40 facts; onboarding; daily, streak and boxing-day reminders; settings with a voice test and
+the Corner tab with twelve Legends stories with archive photo galleries, a boxing calendar, a
+library of 84 quotes and 40 facts, and Gym Wall: 148 posters (taglines, legends, archive moments, inspiration, quotes) for the
+home and lock screen, with a live wallpaper that shows the next one every time the screen wakes; onboarding; daily, streak and boxing-day reminders; settings with a voice test and
 an About screen.
 
 **Not yet:** move animations, video technique analysis, cloud sync.

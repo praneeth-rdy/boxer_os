@@ -77,7 +77,13 @@ the session engine and the Train tab, then the rest.
 | C-05 | Boxing calendar (39 dates), page, Home card, 09:00 reminder. | done 2026-08-30: `.claude/handoffs/2026-08-30-content` (task-05) |
 | C-06 | Reaction drills: Peripheral, Colour call, Sequence, Sound. | done 2026-08-30: `.claude/handoffs/2026-08-30-content` (task-06) |
 | C-07 | PolyForm Noncommercial license, privacy policy, About screen, url_launcher. | done 2026-08-30: `.claude/handoffs/2026-08-30-content` (task-07) |
-| C-08 | Corner tab (legends, calendar, quotes and facts library), legend cards with text below the photo, calendar detail sheet. | done 2026-08-30: `task-08`; device check pending reconnection |
+| C-08 | Corner tab (legends, calendar, quotes and facts library), legend cards with text below the photo, calendar detail sheet. | done 2026-08-30: `task-08`, device checked |
+| C-09 | Legend photo crops and focal points, HD re-export, archive galleries (34 photos), own quotes only, Corner and Legends icons. | done 2026-08-30: `task-09`, device checked |
+| C-10 | Gym Wall: quote, legend and tagline posters set as home or lock wallpaper via `boxer_os/wallpaper`. | done 2026-08-30: `task-10`, lock screen verified on the device (the phone's text-only launcher cannot show a home wallpaper) |
+| C-11 | Credit string cleanup and full-bleed archive strip. | done 2026-08-30: `task-11`, `task-12` |
+| C-12 | Gym Wall: Moments (34 archive photos) and Inspiration (14 atmosphere photos) posters. | done 2026-08-30: `task-13` |
+| C-13 | Gym Wall Live: live wallpaper cycling pre-rendered posters on every screen-on; shuffle all or pick a few. | done 2026-08-30: `task-14`; verified on the Vivo phone: three wakes, three posters, both screens |
+| C-14 | Live wallpaper page copy for OEM apply screens, status refresh on resume; "Live wallpaper" naming. | done 2026-08-30: `task-15`, `task-16` |
 
 ## Phase 2: release readiness
 

@@ -33,6 +33,11 @@ app, or using "Clear history" in Settings, removes it.
   are scheduled locally on the device; no notification service outside your phone is involved.
 - Boot completed (`RECEIVE_BOOT_COMPLETED`): so scheduled reminders survive a restart.
 - Vibration and keeping the screen awake during a session are used for training cues.
+- Set wallpaper (`SET_WALLPAPER`): only when you choose a poster in Gym Wall and tap set. The
+  image is drawn on your device; nothing is downloaded or uploaded.
+- Live wallpaper (Gym Wall Live): if you turn it on, the app stores the posters you chose in its
+  private storage and Android shows the next one when the screen turns on. Nothing leaves the
+  device.
 - The app can bind to your phone's text-to-speech engine to speak cues. Speech is generated on
   the device by that engine.
 

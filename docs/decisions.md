@@ -2,6 +2,44 @@
 
 Newest first. One entry per decision that a later reader might want to revisit.
 
+## 2026-08-30 Live wallpaper activation goes through the OEM screen, and that is fine
+
+On Vivo (Android 16) the change-live-wallpaper intent is handled by the theme app: a preview
+hosting our engine, an Apply button, then an "Apply to" sheet (lock, home, both). Stock
+Android shows its own picker with the same choice. Verified on the owner's phone: after
+applying to both, three wakes showed three different posters. The app therefore only
+explains the two steps; it never tries to set the live wallpaper component itself (that API
+needs a signature permission).
+
+## 2026-08-30 Wallpaper rotation is a live wallpaper, not a background job
+
+"A new poster every time the screen lights up" needs a screen-on signal, which Android only
+delivers to a live wallpaper service (broadcast receivers cannot register for it from a dead
+process, and a foreground service would cost battery and a permanent notification). Gym Wall
+Live is therefore a `WallpaperService` that shows the next of a set of posters Flutter
+pre-rendered to app storage as JPEGs. The boxer picks the set (everything or a selection) in
+the app and activates the wallpaper once on the system screen.
+
+## 2026-08-30 A legend's story quotes only that legend
+
+Pull quotes inside a story must be the legend's own words (owner rule). Where the library had
+none, one verified quote was added (Marciano, Jack Johnson, Katie Taylor) rather than
+borrowing another athlete's line. Mentors' quotes (Cus D'Amato on Tyson's page) were removed.
+
+## 2026-08-30 Photos are exported at up to 2000 px
+
+Cards, story heroes and wallpapers all draw from the same assets, so the primaries are kept
+at HD (long side up to 2000 px) and gallery photos at 1600 px, about 14 MB of assets in
+total. Where Commons had a sharper clean portrait it replaced the first pick (Tyson,
+Robinson, Mayweather, Taylor). Cards use 1:1 (list) and 4:3 (featured) crops with a
+per-legend focal point.
+
+## 2026-08-30 Gym Wall sets wallpapers through a MethodChannel
+
+`boxer_os/wallpaper` in `MainActivity.kt` wraps `WallpaperManager` (home, lock or both);
+posters are rendered by Flutter at the device resolution from the same theme and assets, so
+no image files are shipped for the wallpapers themselves. No plugin dependency.
+
 ## 2026-08-30 Fifth tab: Corner
 
 Legends and the calendar were first reachable from the Skills hub, which the owner rejected:

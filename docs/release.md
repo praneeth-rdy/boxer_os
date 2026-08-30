@@ -92,6 +92,7 @@ plugin manifests merge in beyond `AndroidManifest.xml`:
 |---|---|
 | `POST_NOTIFICATIONS` | daily reminder and streak nudge, declared in `AndroidManifest.xml` |
 | `RECEIVE_BOOT_COMPLETED` | reschedules reminders after the device restarts, declared in `AndroidManifest.xml` |
+| `SET_WALLPAPER` | Gym Wall sets a poster as the home or lock screen wallpaper when the boxer asks, declared in `AndroidManifest.xml` |
 | `VIBRATE` | round-change haptics, merged in from a plugin manifest |
 | `INTERNET` | merged in from a plugin manifest; unused at runtime since the app makes no network calls |
 
