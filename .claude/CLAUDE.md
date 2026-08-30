@@ -46,7 +46,7 @@ Tagline: "Train. Fight. Improve. Repeat."
 Canonical description: `docs/architecture.md` (target layout, module map, data flow, persistence).
 Short version: `main.dart` -> `MultiProvider(SettingsProvider, SessionProvider, HistoryProvider,
 ReactionProvider, CombosProvider, ShellProvider, ...)` -> onboarding on first launch, then an app
-shell with four tabs (Home, Train, Skills, Progress). Pages and
+shell with five tabs (Home, Train, Skills, Corner, Progress). Pages and
 widgets talk to providers; providers hold state and orchestration; services talk to the platform
 (storage, audio, haptics, wake lock); bundled workout and drill definitions live under `lib/data/`
 as Dart constants. The session timer engine is a provider driven by one `Timer.periodic` and a

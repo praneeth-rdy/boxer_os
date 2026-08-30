@@ -1,10 +1,10 @@
 # Architecture
 
-Local-first boxing training companion in Flutter, Android-only. Four tabs (Home, Train, Skills,
-Progress), a session screen that runs round timers with bells and haptics, and local storage for
+Local-first boxing training companion in Flutter, Android-only. Five tabs (Home, Train, Skills,
+Corner, Progress), a session screen that runs round timers with bells and haptics, and local storage for
 preferences and training history.
 
-Last verified against the code: 2026-08-29. Update this file in the same change that makes it wrong.
+Last verified against the code: 2026-08-30. Update this file in the same change that makes it wrong.
 
 ## Stack
 
@@ -22,12 +22,14 @@ Last verified against the code: 2026-08-29. Update this file in the same change 
 - Dependencies today: `provider` ^6.1.5, `shared_preferences` ^2.5.5, `audioplayers` ^6.7.1
   (6.8 requires Flutter 3.44), `flutter_tts` ^4.2.5, `wakelock_plus` ^1.7.0,
   `flutter_local_notifications` ^22.3.0 with `timezone` ^0.11.1 and `flutter_timezone` ^5.1.0
-  (the reminder trio), `flutter_lints`,
+  (the reminder trio), `url_launcher` ^6.3.2 (the About screen's outbound links), `flutter_lints`,
   `flutter_test`, `fake_async`, `shared_preferences_platform_interface` (dev only, for the
   in-memory prefs store the settings tests subclass). Training history rides on
   `shared_preferences` too, behind `HistoryStore`, so no store package was added.
-- Assets: `assets/fonts/` (BebasNeue, Inter in four weights) and `assets/audio/` (bells and beeps played by
-  `AudioService`), both declared in `pubspec.yaml`.
+- Assets: `assets/fonts/` (BebasNeue, Inter in four weights), `assets/audio/` (bells and beeps played by
+  `AudioService`), `assets/legends/` (one photo per bundled legend, `<id>.jpg`) and the single file
+  `assets/icon/ic_launcher_1024.png` (the About screen's logo; the rest of `assets/icon/` stays out of
+  the bundle), all declared in `pubspec.yaml`.
 
 ## Layers (target)
 
@@ -38,9 +40,10 @@ pages/widgets  ->  providers  ->  services  ->  platform (prefs, history store, 
 ```
 
 Rules: widgets talk to providers, providers talk to services and read `data/`, services talk to
-the platform. Two services are exposed to the page layer as plain `Provider<T>.value`s in
-`main.dart`, both only so Settings can fire a one-off call: `VoiceService` for "Test voice" and
-`NotificationService` for the notification permission prompt; every other service stays behind
+the platform. Three services are exposed to the page layer as plain `Provider<T>.value`s in
+`main.dart`, each only so a page can fire a one-off call: `VoiceService` for Settings' "Test voice",
+`NotificationService` for the notification permission prompt and `AudioService` for the beep the
+reaction trainer's sound mode reacts to; every other use of them stays behind
 `CueController` or `ReminderScheduler`. Providers never
 import widgets or `BuildContext`; `utils/session_launcher.dart` is the one helper that takes a
 `BuildContext`, because it serves the page layer rather than the provider layer. The session
@@ -63,16 +66,19 @@ tables rather than alternating hands, and `isValidCombination` is the one rule t
 and the bundled combinations are both held to (all sixty bundled entries pass it). Two shapes
 are carved out by name: the double jab is the only adjacent repeat, and the high-low jab
 (`1-1b`) the only chain that lands on the body jab. `combination_library.dart` is the sixty bundled
-combinations. The notation is
+combinations. `legends.dart` is the twelve legend stories, each pointing at its photo under
+`assets/legends/` and at its pull quotes by position in `quotes`, so the copy and the quote
+library stay in one place each. The notation is
 stance-independent, so `1` is the lead hand for orthodox and southpaw alike. `footwork_drills.dart`
 is the Skills hub's own catalogue and is deliberately not part of `workoutLibrary`, so the Train
 tab does not list it.
 
 Reminders: `ReminderScheduler` is the second orchestrator alongside `CueController`. It listens to
-`SettingsProvider` and `HistoryProvider`, coalesces bursts with a 300 ms timer, and rewrites both
+`SettingsProvider` and `HistoryProvider`, coalesces bursts with a 300 ms timer, and rewrites the three
 reminders through `NotificationService`: the daily one repeats at the chosen time with the quote of
 the day as its body, the streak nudge is a single 8 pm notification skipped to tomorrow once a
-session with a completed round is logged today. Scheduling is inexact (`inexactAllowWhileIdle`), so
+session with a completed round is logged today, and the boxing-day note is a single 9 am
+notification on the next date in `boxingCalendar` (today when the morning has not yet passed). Scheduling is inexact (`inexactAllowWhileIdle`), so
 no exact-alarm permission is needed, and every failure is swallowed: reminders are best effort.
 
 Recommendation: `recommendWorkout` is a pure rule over `TrainingStats`, the least recently trained
@@ -83,11 +89,17 @@ Reaction trainer: `ReactionProvider` is a second timer-driven engine, independen
 one. It holds one timer at a time (countdown, wait, stimulus timeout, feedback), takes an
 injectable clock and `Random`, and measures a hit as `clock()` at the tap minus `clock()` at the
 stimulus. The page picks the mode and the format and reports taps;
-`ReactionArena` owns the hit zones and the `DefenseGrid`.
-Four modes: tap and direction ask for a hit anywhere or on one edge, defense calls an
+`ReactionArena` owns the hit zones and the `DefenseGrid`, `ColourGrid` and `SequencePad`.
+Eight modes, grouped in the picker by `ReactionMode.isBoxing`. Tap and direction ask for a hit
+anywhere or on one edge, defense calls an
 `IncomingPunch` and asks for `defenseFor(punch, stance)` (the stance comes in on `start`, so the
 engine reads no provider), and go / no-go shows a go stimulus 70 percent of the time and scores a
-left-alone hold stimulus as a correct hold after 1000 ms, a tapped one as a false alarm. Two
+left-alone hold stimulus as a correct hold after 1000 ms, a tapped one as a false alarm.
+Peripheral drops a dot at fractions 0.1 to 0.9 of the arena and takes a tap within
+`dotHitRadius` (0.09) of it, colour prints one colour name in another colour's ink and takes the
+ink, sequence flashes two to four arrows for 600 ms each and then takes them back in order (its
+clock starts only once the arrows are hidden, and it times out at 2 s per arrow), and sound leaves
+the screen dark and is answered off the beep the page plays on the stimulus. Two
 formats: standard runs ten consumed trials, endurance runs until the first trial that ends past
 `enduranceSeconds` (60), so a run finishes within one trial of the minute and `secondsLeft` is
 computed on read rather than from a timer.
@@ -102,7 +114,7 @@ computed on read rather than from a timer.
 | `data/` | Bundled definitions: the workout library, drill catalogue, punch and defense vocabulary used by the combination generator. Dart constants or JSON under `assets/`. |
 | `services/` | Platform and storage boundaries: preferences, history store, audio cues, haptics, wake lock. Static or single-instance, return null/false or throw `Exception`, never leak platform errors. |
 | `providers/` | `ChangeNotifier`s: settings, session engine, history, progress, skills. State and orchestration only. |
-| `pages/` | One file per screen: app shell, home, train, session, skills, reaction trainer, progress, history, settings. |
+| `pages/` | One file per screen: app shell, home, train, session, skills, reaction trainer, corner, progress, history, settings. |
 | `widgets/` | Reusable pieces: round clock, cue banner, big pill buttons, stat tiles, streak strip, rating input. |
 | `utils/` | Pure helpers: duration formatting, date helpers, streak maths. |
 
@@ -110,7 +122,7 @@ computed on read rather than from a timer.
 
 | File | Role |
 |---|---|
-| `main.dart` | `main()` (portrait lock, system overlay style, loads `SettingsProvider`, `HistoryProvider` and `CombosProvider`, creates `SessionProvider`, builds the cue services and holds the `CueController` in the top-level `cues`, initialises `NotificationService` and holds the `ReminderScheduler` in the top-level `reminders`) and `BoxerOsApp`: `MultiProvider` (settings, session, history, `CombosProvider`, `ReactionProvider`, `ShellProvider`, `Provider<VoiceService>`, `Provider<NotificationService>`) -> `MaterialApp` with `AppTheme.dark` -> `AppShell`, or `OnboardingPage` while `onboardingDone` is false. |
+| `main.dart` | `main()` (portrait lock, system overlay style, loads `SettingsProvider`, `HistoryProvider` and `CombosProvider`, creates `SessionProvider`, builds the cue services and holds the `CueController` in the top-level `cues`, initialises `NotificationService` and holds the `ReminderScheduler` in the top-level `reminders`) and `BoxerOsApp`: `MultiProvider` (settings, session, history, `CombosProvider`, `ReactionProvider`, `ShellProvider`, `Provider<AudioService>`, `Provider<VoiceService>`, `Provider<NotificationService>`) -> `MaterialApp` with `AppTheme.dark` -> `AppShell`, or `OnboardingPage` while `onboardingDone` is false. |
 | `theme/app_theme.dart` | `AppTheme`: colours, spacing, radii, sizes, text styles, `appVersion` and the dark `ThemeData` (including the Android `FadeForwardsPageTransitionsBuilder`). |
 | `theme/app_motion.dart` | `AppMotion`: the animation durations (`fast`, `base`, `slow`, `flash`, `stagger`), the `enter` and `change` curves, and `reduced` / `of` for the system's reduce-motion setting. |
 | `models/stance.dart` | `Stance` enum (orthodox, southpaw) with `label` and `fromName`. |
@@ -124,8 +136,9 @@ computed on read rather than from a timer.
 | `models/session_event.dart` | `SessionEventType` enum and `SessionEvent`: one engine announcement (type, round, optional cue text) with equality. |
 | `models/combination.dart` | `Combination`: a combination's moves, level and seed, plus the library identity (`id`, `name`, `description`, `tags`, `isFromLibrary`), with `notation`, `spoken`, `punchCount`, JSON and equality (by id when it has one, otherwise moves and level). |
 | `models/combo_tag.dart` | `ComboTag` enum (offense, counter, body, defense, movement) with `label` and `fromName` (falls back to offense). |
-| `models/reaction_mode.dart` | `ReactionMode` enum (tap, direction, defense, goNoGo) with `label`, `description` and `fromName`. |
+| `models/reaction_mode.dart` | `ReactionMode` enum (tap, direction, defense, goNoGo, peripheral, colour, sequence, sound) with `label`, `description`, `isBoxing` (the picker's grouping) and `fromName`. |
 | `models/reaction_format.dart` | `ReactionFormat` enum (standard, endurance) with `label` and `fromName`. |
+| `models/reaction_colour.dart` | `ReactionColour` enum (red, mint, amber, chalk) with `label`, the `swatch` it paints in and the `onSwatch` a label stays readable in. |
 | `models/reaction_direction.dart` | `ReactionDirection` enum (up, down, left, right) with the arrow `icon`. |
 | `models/incoming_punch.dart` | `IncomingPunch` enum (jab, cross, leadHook, rearHook, body) with `label`, the punch a defense trial calls. |
 | `models/defense_zone.dart` | `DefenseZone` enum (slipLeft, slipRight, roll, block) with `label`, plus `defenseFor(punch, stance)`, the answer that beats a punch. |
@@ -133,41 +146,53 @@ computed on read rather than from a timer.
 | `models/milestone.dart` | `Milestone`: one progress badge (id, title, description, icon) and whether it is achieved. |
 | `models/quote.dart` | `Quote`: one attributed quotation (text, author, sport). |
 | `models/boxing_fact.dart` | `BoxingFact`: one piece of boxing history and the boxer or event it names. |
+| `models/boxing_event.dart` | `BoxingEvent` and `EventKind` (anniversary, birthday, memorial, international day): one dated moment in boxing, with its `subtitle` (kind and year) and the optional `legendId` of the bundled legend it belongs to. |
+| `models/legend.dart` | `Legend`, `StorySection` and `PhotoCredit`: one boxer's story (identity, hook, four sections, pull quotes by position in `quotes`, takeaways, photo and its credit). |
 | `data/workout_library.dart` | `workoutLibrary`: the twelve bundled workouts with per-round cues, plus `findWorkout` and `workoutsOfType`. |
 | `data/boxing_vocabulary.dart` | The punch, defense and movement tokens per difficulty (the exits live in `boxing_grammar.dart`), plus `isPunch`, `isLeadHand`, `isMovement` and `isBodyShot`. |
 | `data/boxing_grammar.dart` | The boxing grammar: `allowedNext` (what follows each punch), `punchesAfterDefense`, weighted `openers`, `exits`, and `isAllowedTransition`, `canExtendChain`, `chainEndsLegally`, `isValidCombination`. |
 | `data/combination_library.dart` | `combinationLibrary`: the sixty named combinations (`c01`..`c60`) with coaching notes and tags, plus `findCombination` and `combinationsWhere`. |
-| `data/footwork_drills.dart` | `footworkDrills`: the five bundled footwork drills (movement cues only, `fw_` ids, outside `workoutLibrary`), plus `findFootworkDrill`. |
-| `data/quotes.dart` | `quotes`: the thirty bundled quotations, plus `quoteOfTheDay` (by day of year) and `quoteForSession` (by record id). |
-| `data/boxing_facts.dart` | `boxingFacts`: the twenty-four bundled facts, plus `factOfTheDay` (day of year, offset by seven so it does not turn over with the quote) and `factForSession`. |
+| `data/footwork_drills.dart` | `footworkDrills`: the ten bundled footwork drills (movement cues only, `fw_` ids, outside `workoutLibrary`), plus `findFootworkDrill`. |
+| `data/app_identity.dart` | `AppIdentity`: the developer, brand, copyright, licence name and the source, licence, privacy policy and contact urls, in one place. |
+| `data/quotes.dart` | `quotes`: the eighty-one bundled quotations (fifty-two from boxing), plus `QuoteSurface`, `quoteFor` (a fixed shuffle read at `day of year * 7` plus a per-surface offset, so Home, Progress, onboarding and the reminder never coincide), `quoteAfter` (the next one in that order, wrapping) and `quoteForSession` (by record id). |
+| `data/boxing_facts.dart` | `boxingFacts`: the forty bundled facts, plus `FactSurface`, `factFor` (the same shuffled rotation as the quotes, with its own seed and per-surface offsets for Home and Progress), `factAfter` and `factForSession`. |
+| `data/legends.dart` | `legends`: the twelve bundled legends in fixed order, plus `findLegend` and `legendOfTheWeek` (the list stepped by the week of the year, so a legend holds for a week). |
+| `data/boxing_calendar.dart` | `boxingCalendar`: the thirty-nine bundled boxing days in date order (thirty-five carry a `legendId`), plus `eventsOn` (a day's entries, by kind), `nextEvents` (the next ones, wrapping the year) and `monthName` / `monthAbbreviation`. |
 | `services/audio_service.dart` | `AudioService`: two `AudioPlayer`s (bells, beeps) over the bundled WAVs at volume 1.0, plus `audioContextForCues()`, the media-usage sonification context so the bells follow the media volume and music ducks instead of stopping. |
 | `services/haptics_service.dart` | `HapticsService`: `HapticFeedback` patterns (120 ms gaps) for round start and end, warnings and cues. |
 | `services/voice_service.dart` | `VoiceService`: `flutter_tts` wrapper (en-US, rate 0.5, an explicit local en-US voice picked from `getVoices` because the device locale is en-IN) with `isAvailable`, `voiceName`, `speak`, `sayTest` and `stop`. |
 | `services/history_store.dart` | `HistoryStore`: session records and reaction results as JSON lists in `shared_preferences`, with an injectable `SharedPreferences`; unreadable JSON loads as an empty list and a single bad entry is skipped. |
 | `services/wake_lock_service.dart` | `WakeLockService`: `WakelockPlus.enable` / `disable`. |
-| `services/notification_service.dart` | `NotificationService`: `flutter_local_notifications` over the `reminders` channel, with `init` (timezone database plus the device zone, UTC on failure), `requestPermission` (falls back to `areNotificationsEnabled` when the request returns false, null or throws), `scheduleDaily`, `scheduleOnce`, `cancel`, `cancelAll` and the `dailyReminderId` / `streakNudgeId` ids; inexact scheduling, every call false on failure. |
-| `services/reminder_scheduler.dart` | `ReminderScheduler`: keeps the daily reminder and the 8 pm streak nudge in step with `SettingsProvider` and `HistoryProvider`, debounced by 300 ms, over an injectable clock. |
+| `services/notification_service.dart` | `NotificationService`: `flutter_local_notifications` over the `reminders` channel, with `init` (timezone database plus the device zone, UTC on failure), `requestPermission` (falls back to `areNotificationsEnabled` when the request returns false, null or throws), `scheduleDaily`, `scheduleOnce`, `cancel`, `cancelAll` and the `dailyReminderId` / `streakNudgeId` / `eventReminderId` ids; inexact scheduling, every call false on failure. |
+| `services/reminder_scheduler.dart` | `ReminderScheduler`: keeps the daily reminder, the 8 pm streak nudge and the 9 am boxing-day note in step with `SettingsProvider` and `HistoryProvider`, debounced by 300 ms, over an injectable clock. |
 | `services/cue_controller.dart` | `CueController`: maps `SessionEvent`s and `isActive` onto the cue services and the wake lock, each gated by the matching `SettingsProvider` flag. |
-| `providers/settings_provider.dart` | `SettingsProvider`: stance, difficulty, the fighter name, the onboarding-done flag, the sound/haptics/voice/keep-screen-on flags and the reminder settings (daily on/off, hour, minute, streak nudge on/off), persisted in `shared_preferences`. |
+| `providers/settings_provider.dart` | `SettingsProvider`: stance, difficulty, the fighter name, the onboarding-done flag, the sound/haptics/voice/keep-screen-on flags and the reminder settings (daily on/off, hour, minute, streak nudge on/off, boxing-day reminders on/off), persisted in `shared_preferences`. |
 | `providers/session_provider.dart` | `SessionProvider`: the session state machine (phase, round, seconds left, cues, elapsed) on one timer, with start/pause/resume/skip/end/reset, a `SessionEvent` stream and the finished `SessionRecord`. |
 | `providers/history_provider.dart` | `HistoryProvider`: the training history in memory (sessions and reaction results, newest first) over `HistoryStore`, with `load`, `addSession`, `updateSession`, `deleteSession`, `addReaction`, `clearAll` and `findSession`. |
 | `providers/combos_provider.dart` | `CombosProvider`: the bookmarked combinations in memory (insertion order) over `shared_preferences`, with `load`, `isSaved`, `toggleSaved` and `remove`. |
-| `providers/reaction_provider.dart` | `ReactionPhase` enum and `ReactionProvider`: the reaction test (countdown, wait, stimulus, feedback) on one timer, over four modes and two formats, with `start`, `tap`, `cancel`, `secondsLeft` and the finished `ReactionResult`. |
-| `providers/shell_provider.dart` | `ShellProvider`: which of the four shell tabs is showing (`tabIndex`, `showTab`), so a page can send the boxer to another tab. |
-| `pages/app_shell.dart` | `AppShell`: `IndexedStack` of the four tabs behind a `NavigationBar`, both driven by `ShellProvider`. |
+| `providers/reaction_provider.dart` | `ReactionPhase` enum and `ReactionProvider`: the reaction test (countdown, wait, stimulus, feedback) on one timer, over eight modes and two formats, with `start`, `tap` (direction, defense, `at` or colour), `cancel`, `secondsLeft`, the per-mode stimulus (`dotPosition`, `inkColour` / `wordColour`, `sequence` / `entered` / `isShowingSequence`, `isSoundMode`) and the finished `ReactionResult`. |
+| `providers/shell_provider.dart` | `ShellProvider`: which of the five shell tabs is showing (`tabIndex`, `showTab`, Home 0 to Progress 4), so a page can send the boxer to another tab. |
+| `pages/app_shell.dart` | `AppShell`: `IndexedStack` of the five tabs (Home, Train, Skills, Corner, Progress) behind a `NavigationBar`, both driven by `ShellProvider`. |
 | `pages/onboarding_page.dart` | `OnboardingPage`: the three first-launch steps (fighter name over the quote of the day, stance, level) with Back/Next and a Skip that finishes on the defaults. |
-| `pages/home_page.dart` | `HomePage`: the greeting by name and settings gear, the two-row streak strip, the quote of the day, today's recommended session with Start (first-session copy while there is no history), three `QuickAction`s, the fact of the day and the last session. |
+| `pages/home_page.dart` | `HomePage` (an injectable `clock` so a test can pick the date): the greeting by name and settings gear, the two-row streak strip, the TODAY IN BOXING card on a day the calendar names (an `EventCard`, tapping it opens the event sheet), the quote of the day, the legend of the week as a featured `LegendCard` over a "More in Corner" link that switches the shell to the Corner tab, today's recommended session with Start (first-session copy while there is no history), three `QuickAction`s, the fact of the day and the last session. |
 | `pages/train_page.dart` | `TrainPage`: the quick timer card and the library, grouped by training type; tapping a tile opens `WorkoutDetailPage`. |
 | `pages/workout_detail_page.dart` | `WorkoutDetailPage`: one workout's description, stats and per-round breakdown, with the "Start workout" button. |
 | `pages/session_page.dart` | `SessionPage`: the phone-down session screen (eyebrow, phase word, `RoundClock`, `CueBanner`, pause/skip/end), guarded by a `PopScope` end-session dialog; it listens to `SessionProvider.events` to wash the screen in the phase colour when a round or a rest starts. |
 | `pages/session_complete_page.dart` | `SessionCompletePage`: the notes sheet (stats, the session's quote, rating, what worked, what needs work, opponent and stance on sparring, the session's fact) with a Save button; a session with no round and under a minute of work offers Done only. |
 | `pages/skills_page.dart` | `SkillsPage`: the hub, three `SkillCard`s (combos, reaction and footwork, all wired). |
+| `pages/corner_page.dart` | `CornerPage` (an injectable `clock`): the reading tab, the legend of the week over an "All legends" card, TODAY IN BOXING and the next three days over a Calendar card, and the Quotes and Did-you-know cards. |
+| `pages/quotes_page.dart` | `QuotesPage`: the whole quote library as compact `QuoteCard`s behind a `FilterChipRow` of sports (a boxing trainer's line files under Boxing). |
+| `pages/facts_page.dart` | `FactsPage`: every bundled fact as a `FactCard`. |
 | `pages/combos_page.dart` | `ComboView` enum and `CombosPage`: the three combination views (Generate, Library, Saved) behind a segmented control, each able to start a practice drill. |
-| `pages/reaction_page.dart` | `ReactionPage`: the reaction trainer's format toggle and four mode cards, the running test and the result (best, average, accuracy on defense and go / no-go, the endurance decay line). |
+| `pages/reaction_page.dart` | `ReactionPage`: the reaction trainer's format toggle and eight mode cards under the BOXING and PURE SPEED eyebrows, the running test (playing `AudioService.playTick` on each sound-mode stimulus) and the result (best, average, accuracy on defense and go / no-go, the endurance decay line). |
 | `pages/footwork_page.dart` | `FootworkPage`: the footwork catalogue as `WorkoutTile`s; tapping one opens `WorkoutDetailPage`. |
-| `pages/progress_page.dart` | `ProgressPage`: week rounds/minutes/streak tiles, the 7-day minutes chart, the week's split by type, the reaction section (per-mode best tiles, the chart of the last ten bests and the newest endurance decay), milestone badges, all-time totals with the fact of the day, and the History `SkillCard` (captioned with the number of logged sessions) under the header; with no history it shows an `EmptyState` that switches the shell to Train. |
+| `pages/legends_page.dart` | `LegendsPage`: the twelve legends as `LegendCard`s under the Legends header; tapping one opens `LegendStoryPage`. |
+| `pages/legend_story_page.dart` | `LegendStoryPage`: one legend read as a magazine feature (photo hero in a pinned `SliverAppBar` that turns `ink` and shows the name once collapsed, the title block on the `ink` ground below it, the facts strip as a `Wrap` of country, division and record chips, the four sections with the legend's pull quotes between them, the numbered takeaways and the photo credit, which calls `openExternal`). |
+| `pages/calendar_page.dart` | `CalendarPage`: the boxing year in twelve month groups of `EventTile`s, scrolled to the current month on open, with today's entry and the next one marked; a row opens the event sheet. |
+| `pages/progress_page.dart` | `ProgressPage`: week rounds/minutes/streak tiles, the 7-day minutes chart, the week's split by type, the reaction section (per-mode best tiles, wrapped three to a line, the chart of the last ten bests and the newest endurance decay), milestone badges, all-time totals with the fact of the day, and the History `SkillCard` (captioned with the number of logged sessions) under the header; with no history it shows an `EmptyState` that switches the shell to Train. |
 | `pages/history_page.dart` | `HistoryPage`: every stored session newest first, grouped under TODAY / YESTERDAY / `MON 24 AUG` day headers; a tile opens `SessionDetailPage`, and an empty history shows an `EmptyState` that pops back to the Train tab. |
-| `pages/settings_page.dart` | `SettingsPage`: the fighter name field, stance, level, the four cue switches with the "Test voice" button and chosen-voice caption under them, the daily reminder and streak nudge switches (both behind the same permission request, with a refusal snackbar) with the time row and its picker, "Show onboarding again", the confirmed clear-history action and the version. |
+| `pages/settings_page.dart` | `SettingsPage`: the fighter name field, stance, level, the four cue switches with the "Test voice" button and chosen-voice caption under them, the daily reminder, streak nudge and boxing-days switches (all behind the same permission request, with a refusal snackbar) with the time row and its picker, "Show onboarding again", the confirmed clear-history action and the About card. |
+| `pages/about_page.dart` | `AboutPage`: the logo and version, who made it, the PolyForm Noncommercial licence with its two link rows, the privacy stance with the policy and contact rows, and the font and legend-photo credits; a link row that fails says so in a snackbar. |
 | `pages/session_detail_page.dart` | `SessionDetailPage`: one stored session read only (stats and notes) with a confirmed delete. |
 | `widgets/section_header.dart` | `SectionHeader`: optional uppercase eyebrow, display title, optional trailing widget. |
 | `widgets/pill_button.dart` | `PillStyle` enum and `PillButton`: full-width pill action in filled, outlined or ghost weight, with an optional leading icon, scaling down while pressed. |
@@ -186,11 +211,17 @@ computed on read rather than from a timer.
 | `widgets/bar_chart.dart` | `BarChart`: vertical bars scaled to the largest value on `line` tracks, labelled underneath; the last bar is the full colour, earlier ones faded. |
 | `widgets/milestone_badge.dart` | `MilestoneBadge`: one `Milestone` as a circular badge, dimmed while unearned; earned badges settle in and scale up, unearned ones only fade. |
 | `widgets/session_tile.dart` | `SessionTile`: one stored session as a tappable row (name, type, rounds, minutes, rating). |
-| `widgets/reaction_arena.dart` | `ReactionArena`: the reaction hit area (stimulus, feedback colour, the four direction zones, the defense grid and the go / hold flash); the glyph scales in, and the stimulus colour lands on its own frame so nothing is added to the measured time. |
+| `widgets/reaction_arena.dart` | `ReactionArena` and the `ReactionTap` callback: the reaction hit area (stimulus, feedback colour, the direction pad, the defense and colour grids, the peripheral dot and its tap-to-fraction mapping, the go / hold flash and the ring pulsing through a dark sound wait); the glyph scales in, and the stimulus colour lands on its own frame so nothing is added to the measured time. |
+| `widgets/colour_grid.dart` | `ColourGrid`: the four `ReactionColour`s as a 2 x 2 hit grid of filled zones with cornered labels, and an optional centre widget stacked over it. |
+| `widgets/sequence_pad.dart` | `SequencePad`: the four direction edges with a centre that shows the arrows to memorise, then a dot per arrow filled as each is tapped back; with an empty sequence it is the plain direction pad. |
 | `widgets/defense_grid.dart` | `DefenseGrid`: the four defense answers as a 2 x 2 hit grid with cornered labels, dimmed until a punch is live, and an optional centre widget stacked over it. |
 | `widgets/quick_action.dart` | `QuickAction`: one Home shortcut as a square raised card, an icon over its label. |
-| `widgets/quote_card.dart` | `QuoteCard`: one `Quote` as a surface card marked by a 3 dp accent bar down its left edge, `compact` for the in-page version. |
-| `widgets/fact_card.dart` | `FactCard`: one `BoxingFact` as a raised card under a "DID YOU KNOW · SUBJECT" eyebrow. |
+| `widgets/quote_card.dart` | `QuoteCard`: one `Quote` as a surface card marked by a 3 dp accent bar down its left edge, `compact` for the in-page version and `cycles` for the tappable version that fades to `quoteAfter` under a "Tap for another" caption. |
+| `widgets/fact_card.dart` | `FactCard`: one `BoxingFact` as a raised card under a "DID YOU KNOW · SUBJECT" eyebrow, with the same `cycles` tap-for-another behaviour as `QuoteCard`. |
+| `widgets/legend_card.dart` | `LegendCard`: one legend as a photo at 4:3 (16:10 and in bigger type when `featured`) over a solid text block (country and division, name, hook); plus `LegendPhoto`, the top-aligned portrait shared with the story hero. |
+| `widgets/event_tile.dart` | `EventTile`: one calendar entry as a dated row (day and month column, title, blurb, kind and year), coloured `accent` when it is today and `rest` when it is next, tappable through `onTap`. |
+| `widgets/event_card.dart` | `EventCard`: one calendar entry as a raised card (title, blurb, kind and year), opening its sheet; shared by Home and Corner. |
+| `widgets/event_sheet.dart` | `showEventSheet`: the calendar entry's detail sheet (date line, kind chip, title, blurb) with "Read the legend" when the entry names one, which pops and pushes `LegendStoryPage`; plus `eventDateLine`. |
 | `widgets/empty_state.dart` | `EmptyState`: a breathing accent dot, eyebrow, display title, body, an optional action button and an optional extra widget (a `QuoteCard` on Progress). |
 | `widgets/settle_in.dart` | `SettleIn`: fades and lifts a page section into place once, staggered by `index` (capped at eight steps). |
 | `widgets/count_up_text.dart` | `CountUpText`: a number that counts to its new value on tabular figures, with an optional suffix. |
@@ -203,25 +234,33 @@ computed on read rather than from a timer.
 | `utils/practice_builder.dart` | `buildPracticeWorkout`: a shadow boxing drill that calls a list of combinations in order across its rounds, plus `practiceCueInterval` and `practiceCuesPerRound`. |
 | `utils/session_launcher.dart` | `startSession`: starts a workout on `SessionProvider` with the stored stance and pushes `SessionPage`. |
 | `utils/recommendation.dart` | `recommendWorkout`: today's session from `TrainingStats`, the least recently trained type at or nearest the boxer's difficulty. |
+| `utils/external_links.dart` | `openExternal`: opens a url outside the app through `url_launcher` (`LaunchMode.externalApplication`) and reports whether the platform took it, false on a bad url or a platform failure; the top-level `launcher` is the seam tests swap. |
 
 ## Navigation
 
 One `Navigator`, the `MaterialApp`'s. `home` is `OnboardingPage` until `onboarding_done` is set and
 `AppShell` after that; finishing or skipping onboarding stores the flag and replaces the route with
-the shell. `AppShell` keeps the four tabs alive in an `IndexedStack` indexed by `ShellProvider`, so
-tab state (the quick timer's numbers, scroll positions) survives switching and any page can send the
+the shell. `AppShell` keeps the five tabs alive (Home 0, Train 1, Skills 2, Corner 3,
+Progress 4) in an `IndexedStack` indexed by `ShellProvider`, so tab state (the quick timer's numbers, scroll positions) survives switching and any page can send the
 boxer to another tab: the empty Progress state switches to Train, the empty History state pops back
-to the shell first. Settings can push `OnboardingPage` again through "Show onboarding again".
+to the shell first. Settings can push `OnboardingPage` again through "Show onboarding again", and `AboutPage` from its
+About card.
 Everything else is pushed on the root navigator: `WorkoutDetailPage` as a normal route,
 `SessionPage` as a `fullscreenDialog` route that `PopScope(canPop: false)` holds while the session is active, so a
 system back press asks "End session?" instead of leaving the round running. The Skills hub pushes
-`CombosPage`, `ReactionPage` and `FootworkPage` as normal routes; the combos practice drill starts a generated
+`CombosPage`, `ReactionPage` and `FootworkPage` as normal routes. The Corner tab pushes
+`LegendsPage`, `CalendarPage`, `QuotesPage` and `FactsPage` from its cards and `LegendStoryPage`
+for the legend of the week; `LegendsPage` pushes `LegendStoryPage` for the legend tapped; the combos practice drill starts a generated
 `Workout` through the same `startSession` helper. `showComboSheet` is a modal bottom sheet that
 pops with whether to practise, so the page it was opened from starts the session once the sheet
 is gone. `ReactionPage` holds a running test with
 `PopScope(canPop: false)`, but a system back cancels the test straight away instead of asking,
 because nothing is stored yet. Home's gear pushes `SettingsPage`, its quick actions push `CombosPage` and `ReactionPage` or start
-a quick timer through `startSession`, and its last-session tile pushes `SessionDetailPage`.
+a quick timer through `startSession`, its legend of the week pushes `LegendStoryPage` with the "More in
+Corner" link under it switching the shell to the Corner tab, and its last-session tile pushes `SessionDetailPage`.
+An `EventCard` on Home or Corner, an `EventTile` on Corner and every `CalendarPage` row open
+`showEventSheet`, a modal bottom sheet that pops with the entry's `Legend` when "Read the legend"
+is pressed, so the page it was opened from pushes `LegendStoryPage` once the sheet is gone.
 The Progress tab pushes `HistoryPage` from its card under the header, and
 a history tile pushes `SessionDetailPage(id)`; deleting there pops back to the history before the
 record leaves the provider, so the page never renders a session that is already gone. When the
@@ -252,6 +291,7 @@ under their own keys, read and written by `HistoryStore`.
 | `reminder_hour` | int | `SettingsProvider.reminderHourKey` | Hour the daily reminder fires, default 18. |
 | `reminder_minute` | int | `SettingsProvider.reminderMinuteKey` | Minute the daily reminder fires, default 0. |
 | `streak_nudge_enabled` | bool | `SettingsProvider.streakNudgeEnabledKey` | The 8 pm nudge on untrained days, default false; only set once Android grants the permission. |
+| `event_reminders_enabled` | bool | `SettingsProvider.eventRemindersEnabledKey` | The 9 am note on boxing calendar days, default false; only set once Android grants the permission. |
 
 Unknown or missing values fall back to the defaults above (`Stance.fromName` / `Difficulty.fromName`).
 Read and write failures are caught and exposed on `SettingsProvider.error`; the in-memory value stands.
@@ -277,8 +317,9 @@ it `boxer_os/<area>`, keep `MainActivity` a thin dispatcher, and list each metho
 `method | args | returns`.
 
 Manifest (`android/app/src/main/AndroidManifest.xml`): label `Boxer OS`, MAIN/LAUNCHER intent
-filter and two `<queries>` intents: `PROCESS_TEXT` (the Flutter engine's text plugin) and
-`TTS_SERVICE` (so `flutter_tts` can bind a speech engine on Android 11+).
+filter and four `<queries>` intents: `PROCESS_TEXT` (the Flutter engine's text plugin),
+`TTS_SERVICE` (so `flutter_tts` can bind a speech engine on Android 11+) and `VIEW` for the
+`https` and `mailto` schemes (so `url_launcher` can resolve the About screen's links on Android 11+).
 
 Permissions: `POST_NOTIFICATIONS` (the Android 13+ prompt, asked for from either Settings reminder
 switch) and `RECEIVE_BOOT_COMPLETED` (so scheduled reminders survive a reboot). Neither

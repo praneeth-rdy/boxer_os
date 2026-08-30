@@ -47,13 +47,14 @@ beginner path simple and lets advanced boxers customise sessions.
 
 ## Information architecture
 
-Primary navigation (four tabs):
+Primary navigation (five tabs since 2026-08-30):
 
 | Tab | Holds |
 |---|---|
 | Home | today's session, quick actions, streak, weekly snapshot |
 | Train | guided workouts, round timer, custom sessions |
 | Skills | combinations, reaction, defense, footwork drills |
+| Corner | legends (boxers' stories), boxing calendar, quote and fact library |
 | Progress | training analytics, skill progression, records |
 
 Secondary: fighter profile, history (the session log, called "Journal" in the concept), settings, workout library.

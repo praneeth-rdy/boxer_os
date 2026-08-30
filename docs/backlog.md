@@ -33,6 +33,7 @@ the session engine and the Train tab, then the rest.
 5. `2026-08-29-experience`: E-01 to E-06 (done 2026-08-29).
 6. `2026-08-29-reaction-drills`: E-07 (done 2026-08-29).
 7. `2026-08-29-release`: B-04, R-01, R-02 (done 2026-08-29). R-03 is the owner's physical check.
+8. `2026-08-30-content`: C-01 to C-07 (done 2026-08-30, device review pending).
 4. Polish: B-04, R-01, R-02, R-03.
 
 ## Phase 1: V1 epics
@@ -64,6 +65,19 @@ the session engine and the Train tab, then the rest.
 | E-05 | Reminders: daily at a chosen time plus the streak nudge. | done 2026-08-29: `.claude/handoffs/2026-08-29-experience` (task-05) |
 | E-07 | Reaction drills: Defense reaction, Go / No-go, Endurance 60 format, per-mode Progress bests, "Went the minute" badge. | done 2026-08-29: `.claude/handoffs/2026-08-29-reaction-drills` |
 | E-06 | Motion pass with reduce-motion support. | done 2026-08-29: `.claude/handoffs/2026-08-29-experience` (task-06) |
+
+## Phase 1c: content (owner asks after 0.1.0)
+
+| ID | Item | Status |
+|---|---|---|
+| C-01 | 81 quotes (64 percent boxing), 40 boxing facts, per-surface rotation, tap for another. | done 2026-08-30: `.claude/handoffs/2026-08-30-content` (task-01) |
+| C-02 | History icon, c37/c41/c57 copy, footwork drills 5 to 10. | done 2026-08-30: `.claude/handoffs/2026-08-30-content` (task-02) |
+| C-03 | Legends: 12 stories with license-checked Commons photos. | done 2026-08-30: `.claude/handoffs/2026-08-30-content` (task-03) |
+| C-04 | Legends screens, Home feature, Skills card. | done 2026-08-30: `.claude/handoffs/2026-08-30-content` (task-04) |
+| C-05 | Boxing calendar (39 dates), page, Home card, 09:00 reminder. | done 2026-08-30: `.claude/handoffs/2026-08-30-content` (task-05) |
+| C-06 | Reaction drills: Peripheral, Colour call, Sequence, Sound. | done 2026-08-30: `.claude/handoffs/2026-08-30-content` (task-06) |
+| C-07 | PolyForm Noncommercial license, privacy policy, About screen, url_launcher. | done 2026-08-30: `.claude/handoffs/2026-08-30-content` (task-07) |
+| C-08 | Corner tab (legends, calendar, quotes and facts library), legend cards with text below the photo, calendar detail sheet. | done 2026-08-30: `task-08`; device check pending reconnection |
 
 ## Phase 2: release readiness
 

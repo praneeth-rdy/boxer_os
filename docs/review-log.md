@@ -71,3 +71,18 @@ adaptive icon confirmed on the device; README with six device screenshots; Play 
 with the merged permission list. No findings. Owner follow-ups still open: R-03 physical check
 (bells over gym noise, haptics through a glove, phone call mid-round) and confirming the "jab"
 pronunciation after the en-US voice fix.
+
+## 2026-08-30 Round 8: content (`.claude/handoffs/2026-08-30-content`, tasks 01 to 07)
+
+553/553 tests, analyze clean, APK built, no fix rounds.
+
+| ID | Finding | Status |
+|---|---|---|
+| R8-01 | Task-03's acceptance criteria contradicted its own copy (300-character floor, "quote author matches the legend"); the developer typed the copy exactly and reported PARTIAL rather than pad the stories. Tests written to the corrected rules (140 to 700 characters; legends with quotes of their own must use at least one). | fixed: assistant tests, same day |
+| R8-02 | Story page facts strip scaled long values to caption size and inverted the label/value hierarchy on the device. Replaced by wrapping chips. | fixed: `task-08` |
+| R8-03 | `url_launcher` also needed a `mailto` VIEW query in the manifest for the Contact row on Android 11+; added by the developer beyond the package. Accepted. | refuted |
+| R8-04 | Sound reaction mode plays its beep regardless of the Sound cue setting, because the beep is the stimulus, not a cue. Accepted. | refuted |
+| R8-05 | Legends and the calendar were reachable from the Skills hub, which is for drills (owner). Moved to a new fifth tab, Corner. | fixed: `task-08` |
+| R8-06 | Country and division eyebrow over the legend photos was unreadable on light backgrounds (owner); the label also collided with the name (device). Text moved to a solid block under the photo; story hero is photo only. | fixed: `task-08` |
+| R8-07 | Calendar rows were not tappable (owner). Rows and the Today card open a detail sheet with "Read the legend" for 35 of 39 entries. | fixed: `task-08` |
+| R8-08 | Device pass after task-08 (18 screens): five tab labels fit, Corner sections, legend cards and story hero, calendar sheet and "Read the legend", Quotes filter, Facts, Skills with three cards, About with credits all correct; logcat clean. The privacy link opened the GitHub app (installed on the phone) rather than a browser; expected, and it will resolve to the file once the repository is public. | closed |

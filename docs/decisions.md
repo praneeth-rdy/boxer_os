@@ -2,6 +2,46 @@
 
 Newest first. One entry per decision that a later reader might want to revisit.
 
+## 2026-08-30 Fifth tab: Corner
+
+Legends and the calendar were first reachable from the Skills hub, which the owner rejected:
+Skills is for drills. Content now has its own tab, "Corner" (after the corner ropes in the
+logo): Legend of the week, all legends, today and upcoming boxing dates, the quote and fact
+library. Home keeps small cards that deep-link into it. Tab order: Home, Train, Skills,
+Corner, Progress.
+
+## 2026-08-30 No text over photographs
+
+Eyebrow and name over a photo were unreadable on bright shirts. Legend cards and the story
+hero keep the photo clean and put the text on a solid block below it.
+
+## 2026-08-30 License: PolyForm Noncommercial 1.0.0
+
+The owner wants cloning and modification allowed, attribution required, commercial use
+forbidden. PolyForm Noncommercial is written for source code and says exactly that; CC BY-NC
+was rejected because Creative Commons advises against its licenses for software. Third-party
+content keeps its own licenses (OFL fonts, Commons photos with per-image credits).
+
+## 2026-08-30 Legend photos come from Wikimedia Commons with per-image credits
+
+Twelve photos, each public domain, CC0, CC BY, CC BY-SA or OGL, fetched through the Commons
+API with the license and author recorded, resized to 1000 px and bundled. Credits appear on
+the story page and the About screen, which is what the attribution licenses require. No
+photo without a recorded license goes into the app.
+
+## 2026-08-30 Quotes and facts rotate per surface
+
+One quote per day for every surface made the library feel static. Each surface (Home,
+Progress, onboarding, reminder) has its own offset into a fixed shuffled order, so no two
+surfaces show the same entry on the same day, and the cards can be tapped for the next one.
+The library stays a fixed, verified list; workers may not add entries.
+
+## 2026-08-30 Calendar is data first, page second
+
+Boxing anniversaries and international days live as bundled data; Home shows a card only on
+matching days, a page under Legends lists the year, and a settings switch sends a morning
+notification. No custom events, no editing.
+
 ## 2026-08-29 Move animations dropped
 
 Four attempts at an in-app animated boxer (tactical board, silhouette rig, shaded 3D mannequin,

@@ -124,12 +124,12 @@ def feature():
 
 PLAN=[('home','Your corner, in your pocket','corner','Today\'s session, your streak, and a word from the greats.',['Streak','Quote of the day','Did you know']),
       ('session','Bells. Buzzes. Spoken cues.','spoken','Phone down. The clock reads from across the gym.',['Round timer','10 s warning','Voice']),
-      ('train','Twelve guided workouts','guided','Shadow, bag, mitts, footwork, conditioning. Or set your own rounds.',['Beginner to pro']),
       ('combos','Sixty combinations, real boxing','real','Filter by level and style, bookmark, drill them with spoken cues.',['Grammar-checked','Bookmarks','Practice']),
-      ('reaction','Train your reactions','reactions','Tap, Direction, Defense, Go / No-go. Sixty seconds of endurance.',['Best and average','Accuracy']),
-      ('progress','See the work add up','work','Rounds, minutes, streak, milestones. All on your phone, nowhere else.',['7-day chart','Badges']),
-      ('journal','Log every session','every','Rate it. Note what worked and what needs work.',['Sparring notes']),
-      ('reminders','Reminders that respect your streak','respect','A daily nudge at your time, and one only on the days you skipped.',['No account','Offline'])]
+      ('reaction','Train your reactions','reactions','Eight drills, boxing and pure speed. Sixty seconds of endurance.',['Best and average','Accuracy']),
+      ('corner','The corner is open','open','Legends, the boxing calendar and words to train by.',['Twelve legends','39 dates','81 quotes']),
+      ('story','Learn from the legends','legends','What they went through, and what it teaches.',['Stories','Takeaways']),
+      ('progress','See the work add up','work','Rounds, minutes, streak, milestones. All on your phone, nowhere else.',['7-day chart','Badges'])]
+# Play accepts at most eight phone screenshots: the hero plus these seven.
 
 if __name__=='__main__':
     src=sys.argv[1]; os.makedirs(OUT,exist_ok=True)

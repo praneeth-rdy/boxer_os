@@ -7,12 +7,13 @@ Rather than a collection of disconnected timers and trackers, it is a lightweigh
 boxing training system that works before, during, after and between sessions.
 
 <p>
-<img src="docs/screenshots/home.png" width="150">
-<img src="docs/screenshots/train.png" width="150">
-<img src="docs/screenshots/session.png" width="150">
-<img src="docs/screenshots/combos.png" width="150">
-<img src="docs/screenshots/reaction.png" width="150">
-<img src="docs/screenshots/progress.png" width="150">
+<img src="docs/screenshots/home.png" width="130">
+<img src="docs/screenshots/train.png" width="130">
+<img src="docs/screenshots/session.png" width="130">
+<img src="docs/screenshots/combos.png" width="130">
+<img src="docs/screenshots/reaction.png" width="130">
+<img src="docs/screenshots/corner.png" width="130">
+<img src="docs/screenshots/progress.png" width="130">
 </p>
 
 ## What it does
@@ -71,10 +72,12 @@ an Opus worker implements each one, and a Sonnet worker writes tests and runs sm
 
 **Done:** a configurable round timer and 12 guided workouts with bells, haptics and spoken
 cues; a 60-combination library with a boxing-grammar generator, bookmarks and practice
-sessions; a reaction trainer with Tap, Direction, Defense and Go / No-go modes plus the
-Endurance 60 format; footwork drills; session history with ratings and notes; Progress with
-streak, weekly chart and milestones; onboarding, quotes and did-you-know facts; a daily
-reminder and streak nudge; settings with a voice test.
+sessions; a reaction trainer with eight modes (Tap, Direction, Defense, Go / No-go,
+Peripheral, Colour call, Sequence, Sound) plus the Endurance 60 format; ten footwork drills;
+session history with ratings and notes; Progress with streak, weekly chart and milestones;
+the Corner tab with twelve Legends stories, a boxing calendar and a library of 81 quotes and
+40 facts; onboarding; daily, streak and boxing-day reminders; settings with a voice test and
+an About screen.
 
 **Not yet:** move animations, video technique analysis, cloud sync.
 
@@ -82,3 +85,11 @@ reminder and streak nudge; settings with a voice test.
 
 Fonts: Bebas Neue and Inter, both under the SIL Open Font License (`assets/fonts/OFL-*.txt`).
 Bells and beeps are synthesised in-repo, not licensed samples.
+
+## License
+
+Boxer OS is released under the PolyForm Noncommercial License 1.0.0 (see `LICENSE`). You can
+use, copy, modify and share it for noncommercial purposes provided the license notice and
+attribution to Praneeth Reddy stay with the code. Commercial use requires written permission
+from the author. Third-party content: fonts under the SIL OFL; legend photographs from
+Wikimedia Commons under their listed licenses (see the About screen).
