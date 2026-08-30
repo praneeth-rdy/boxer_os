@@ -18,6 +18,7 @@ class SettingsProvider extends ChangeNotifier {
   static const String reminderHourKey = 'reminder_hour';
   static const String reminderMinuteKey = 'reminder_minute';
   static const String streakNudgeEnabledKey = 'streak_nudge_enabled';
+  static const String eventRemindersEnabledKey = 'event_reminders_enabled';
 
   static const int _maxFighterNameLength = 24;
   static const int _defaultReminderHour = 18;
@@ -34,6 +35,7 @@ class SettingsProvider extends ChangeNotifier {
   int _reminderHour = _defaultReminderHour;
   int _reminderMinute = 0;
   bool _streakNudgeEnabled = false;
+  bool _eventRemindersEnabled = false;
   bool _isLoaded = false;
   String? _error;
 
@@ -49,6 +51,7 @@ class SettingsProvider extends ChangeNotifier {
   int get reminderHour => _reminderHour;
   int get reminderMinute => _reminderMinute;
   bool get streakNudgeEnabled => _streakNudgeEnabled;
+  bool get eventRemindersEnabled => _eventRemindersEnabled;
   bool get isLoaded => _isLoaded;
   String? get error => _error;
 
@@ -67,6 +70,7 @@ class SettingsProvider extends ChangeNotifier {
       _reminderHour = prefs.getInt(reminderHourKey) ?? _defaultReminderHour;
       _reminderMinute = prefs.getInt(reminderMinuteKey) ?? 0;
       _streakNudgeEnabled = prefs.getBool(streakNudgeEnabledKey) ?? false;
+      _eventRemindersEnabled = prefs.getBool(eventRemindersEnabledKey) ?? false;
       _error = null;
     } catch (failure) {
       _error = 'Could not read settings: $failure';
@@ -147,6 +151,12 @@ class SettingsProvider extends ChangeNotifier {
     _streakNudgeEnabled = enabled;
     notifyListeners();
     await _write((prefs) => prefs.setBool(streakNudgeEnabledKey, enabled));
+  }
+
+  Future<void> setEventRemindersEnabled(bool enabled) async {
+    _eventRemindersEnabled = enabled;
+    notifyListeners();
+    await _write((prefs) => prefs.setBool(eventRemindersEnabledKey, enabled));
   }
 
   /// Keeps the in-memory value whatever the platform does; failures surface on [error].

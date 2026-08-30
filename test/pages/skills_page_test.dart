@@ -12,6 +12,7 @@ import 'package:boxer_os/providers/history_provider.dart';
 import 'package:boxer_os/providers/reaction_provider.dart';
 import 'package:boxer_os/providers/session_provider.dart';
 import 'package:boxer_os/providers/settings_provider.dart';
+import 'package:boxer_os/services/audio_service.dart';
 
 Future<void> _pump(WidgetTester tester) async {
   SharedPreferences.setMockInitialValues({});
@@ -26,6 +27,7 @@ Future<void> _pump(WidgetTester tester) async {
         ChangeNotifierProvider(create: (_) => ReactionProvider()),
         ChangeNotifierProvider(create: (_) => HistoryProvider()),
         ChangeNotifierProvider(create: (_) => CombosProvider()),
+        Provider<AudioService>(create: (_) => AudioService()),
       ],
       child: const MaterialApp(home: SkillsPage()),
     ),
@@ -33,12 +35,13 @@ Future<void> _pump(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('shows all three skill cards with no SOON badge', (tester) async {
+  testWidgets('shows the three skill cards with no SOON badge', (tester) async {
     await _pump(tester);
 
     expect(find.text('Combos'), findsOneWidget);
     expect(find.text('Reaction'), findsOneWidget);
     expect(find.text('Footwork'), findsOneWidget);
+    expect(find.text('Legends'), findsNothing);
     expect(find.text('SOON'), findsNothing);
   });
 

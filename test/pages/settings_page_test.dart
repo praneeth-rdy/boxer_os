@@ -7,6 +7,7 @@ import 'package:boxer_os/models/difficulty.dart';
 import 'package:boxer_os/models/session_record.dart';
 import 'package:boxer_os/models/stance.dart';
 import 'package:boxer_os/models/training_type.dart';
+import 'package:boxer_os/pages/about_page.dart';
 import 'package:boxer_os/pages/settings_page.dart';
 import 'package:boxer_os/providers/history_provider.dart';
 import 'package:boxer_os/providers/settings_provider.dart';
@@ -84,7 +85,7 @@ Future<_Providers> _pump(
   bool permissionGranted = true,
 }) async {
   // The default 800x600 test surface clips the lower sections; grow it.
-  tester.view.physicalSize = const Size(800, 1400);
+  tester.view.physicalSize = const Size(800, 1700);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
 
@@ -126,12 +127,31 @@ void main() {
     expect(find.text('DATA'), findsOneWidget);
 
     await tester.scrollUntilVisible(
-      find.text('Boxer OS ${AppTheme.appVersion}'),
+      find.text('About Boxer OS'),
       AppTheme.spaceXxl,
       scrollable: find.byType(Scrollable).first,
     );
     expect(find.text('ABOUT'), findsOneWidget);
-    expect(find.text('Boxer OS ${AppTheme.appVersion}'), findsOneWidget);
+    expect(find.text('About Boxer OS'), findsOneWidget);
+    expect(
+      find.text('Version ${AppTheme.appVersion}, license, privacy, credits'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('tapping the About card pushes the About page', (tester) async {
+    await _pump(tester);
+
+    await tester.scrollUntilVisible(
+      find.text('About Boxer OS'),
+      AppTheme.spaceXxl,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('About Boxer OS'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AboutPage), findsOneWidget);
+    expect(find.text('LICENSE'), findsOneWidget);
   });
 
   testWidgets('picking a stance segment calls setStance', (tester) async {
@@ -372,6 +392,38 @@ void main() {
 
       expect(providers.settings.streakNudgeEnabled, isFalse);
       expect(_switchIsOn(tester, 'Streak nudge'), isFalse);
+      expect(
+        find.text('Notifications are off for Boxer OS in Android settings.'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'turning on Boxing days requests permission and enables it when granted',
+    (tester) async {
+      final providers = await _pump(tester);
+      expect(providers.settings.eventRemindersEnabled, isFalse);
+
+      await tester.tap(find.widgetWithText(SwitchListTile, 'Boxing days'));
+      await tester.pumpAndSettle();
+
+      expect(providers.notifications.requestPermissionCalls, 1);
+      expect(providers.settings.eventRemindersEnabled, isTrue);
+      expect(_switchIsOn(tester, 'Boxing days'), isTrue);
+    },
+  );
+
+  testWidgets(
+    'Boxing days stays off and shows a snackbar when permission is denied',
+    (tester) async {
+      final providers = await _pump(tester, permissionGranted: false);
+
+      await tester.tap(find.widgetWithText(SwitchListTile, 'Boxing days'));
+      await tester.pumpAndSettle();
+
+      expect(providers.settings.eventRemindersEnabled, isFalse);
+      expect(_switchIsOn(tester, 'Boxing days'), isFalse);
       expect(
         find.text('Notifications are off for Boxer OS in Android settings.'),
         findsOneWidget,

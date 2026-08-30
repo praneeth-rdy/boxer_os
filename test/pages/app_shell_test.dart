@@ -3,13 +3,14 @@ import 'package:boxer_os/providers/combos_provider.dart';
 import 'package:boxer_os/providers/history_provider.dart';
 import 'package:boxer_os/providers/session_provider.dart';
 import 'package:boxer_os/providers/settings_provider.dart';
+import 'package:boxer_os/services/audio_service.dart';
 import 'package:boxer_os/services/notification_service.dart';
 import 'package:boxer_os/services/voice_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('shows four tabs and switches page on tap', (tester) async {
+  testWidgets('shows five tabs and switches page on tap', (tester) async {
     SharedPreferences.setMockInitialValues({'onboarding_done': true});
     final settings = SettingsProvider();
     await settings.load();
@@ -20,6 +21,7 @@ void main() {
         session: SessionProvider(),
         history: HistoryProvider(),
         combos: CombosProvider(),
+        audio: AudioService(),
         voice: VoiceService(),
         notifications: NotificationService(),
       ),
@@ -32,6 +34,7 @@ void main() {
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Train'), findsOneWidget);
     expect(find.text('Skills'), findsOneWidget);
+    expect(find.text('Corner'), findsOneWidget);
     expect(find.text('Progress'), findsOneWidget);
     expect(find.text('BOXER OS'), findsOneWidget);
 

@@ -7,6 +7,7 @@ import 'package:timezone/timezone.dart' as tz;
 class NotificationService {
   static const int dailyReminderId = 1;
   static const int streakNudgeId = 2;
+  static const int eventReminderId = 3;
 
   static const String _channelId = 'reminders';
   static const String _channelName = 'Training reminders';

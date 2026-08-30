@@ -394,7 +394,7 @@ const List<Combination> combinationLibrary = [
     difficulty: Difficulty.intermediate,
     seed: 0,
     name: 'One-two and circle',
-    description: 'Land the two, then circle away from their power hand.',
+    description: 'Land the two, then step off the line before they can answer.',
     tags: [ComboTag.movement],
   ),
   Combination(
@@ -432,7 +432,7 @@ const List<Combination> combinationLibrary = [
     moves: ['1', '2', '3', '2', '3'],
     difficulty: Difficulty.advanced,
     seed: 0,
-    name: 'Five straight',
+    name: 'Five-punch flurry',
     description:
         'Five punches without losing your stance, breathing out on every '
         'one.',
@@ -605,7 +605,7 @@ const List<Combination> combinationLibrary = [
     moves: ['1', '2', '5', '2', '3'],
     difficulty: Difficulty.advanced,
     seed: 0,
-    name: 'Five-punch',
+    name: 'Uppercut five',
     description:
         'Keep the uppercut short in the middle so the last two still '
         'carry your weight.',

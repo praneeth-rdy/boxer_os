@@ -153,7 +153,9 @@ class _NameStep extends StatelessWidget {
         const SizedBox(height: AppTheme.spaceXl),
         SettleIn(
           index: 1,
-          child: QuoteCard(quote: quoteOfTheDay(DateTime.now())),
+          child: QuoteCard(
+            quote: quoteFor(QuoteSurface.onboarding, DateTime.now()),
+          ),
         ),
         const SizedBox(height: AppTheme.spaceXl),
         SettleIn(

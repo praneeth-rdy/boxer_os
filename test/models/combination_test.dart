@@ -65,28 +65,25 @@ void main() {
     expect(restored.seed, combination.seed);
   });
 
-  test(
-    'toJson and fromJson round-trip id, name, description and tags',
-    () {
-      const combination = Combination(
-        moves: ['1', '2'],
-        difficulty: Difficulty.beginner,
-        seed: 0,
-        id: 'c03',
-        name: 'One-two',
-        description: 'Turn the rear hip into the cross.',
-        tags: [ComboTag.offense, ComboTag.counter],
-      );
+  test('toJson and fromJson round-trip id, name, description and tags', () {
+    const combination = Combination(
+      moves: ['1', '2'],
+      difficulty: Difficulty.beginner,
+      seed: 0,
+      id: 'c03',
+      name: 'One-two',
+      description: 'Turn the rear hip into the cross.',
+      tags: [ComboTag.offense, ComboTag.counter],
+    );
 
-      final restored = Combination.fromJson(combination.toJson());
+    final restored = Combination.fromJson(combination.toJson());
 
-      expect(restored, combination);
-      expect(restored.id, 'c03');
-      expect(restored.name, 'One-two');
-      expect(restored.description, 'Turn the rear hip into the cross.');
-      expect(restored.tags, [ComboTag.offense, ComboTag.counter]);
-    },
-  );
+    expect(restored, combination);
+    expect(restored.id, 'c03');
+    expect(restored.name, 'One-two');
+    expect(restored.description, 'Turn the rear hip into the cross.');
+    expect(restored.tags, [ComboTag.offense, ComboTag.counter]);
+  });
 
   test('toJson omits id, name, description and tags when empty', () {
     const combination = Combination(

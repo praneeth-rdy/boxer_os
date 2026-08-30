@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-/// Which of the four shell tabs is showing.
+/// Which of the five shell tabs is showing.
 class ShellProvider extends ChangeNotifier {
   int _tabIndex = 0;
 

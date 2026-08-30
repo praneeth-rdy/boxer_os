@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/shell_provider.dart';
+import 'corner_page.dart';
 import 'home_page.dart';
 import 'progress_page.dart';
 import 'skills_page.dart';
 import 'train_page.dart';
 
-/// Four-tab shell: Home, Train, Skills, Progress.
+/// Five-tab shell: Home, Train, Skills, Corner, Progress.
 class AppShell extends StatelessWidget {
   const AppShell({super.key});
 
@@ -17,7 +18,13 @@ class AppShell extends StatelessWidget {
     return Scaffold(
       body: IndexedStack(
         index: shell.tabIndex,
-        children: const [HomePage(), TrainPage(), SkillsPage(), ProgressPage()],
+        children: const [
+          HomePage(),
+          TrainPage(),
+          SkillsPage(),
+          CornerPage(),
+          ProgressPage(),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: shell.tabIndex,
@@ -31,6 +38,10 @@ class AppShell extends StatelessWidget {
           NavigationDestination(
             icon: Icon(Icons.bolt_rounded),
             label: 'Skills',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.auto_stories_rounded),
+            label: 'Corner',
           ),
           NavigationDestination(
             icon: Icon(Icons.insights_rounded),

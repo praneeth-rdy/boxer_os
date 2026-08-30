@@ -59,25 +59,22 @@ void main() {
     },
   );
 
-  testWidgets(
-    'does not pulse outside the last ten seconds of a work phase',
-    (tester) async {
-      await pump(
-        tester,
-        const RoundClock(
-          secondsLeft: 11,
-          phaseSeconds: 120,
-          phase: SessionPhase.work,
-        ),
-      );
-
-      expect(find.byKey(const ValueKey<int>(11)), findsNothing);
-    },
-  );
-
-  testWidgets('does not pulse during rest, even with time low', (
+  testWidgets('does not pulse outside the last ten seconds of a work phase', (
     tester,
   ) async {
+    await pump(
+      tester,
+      const RoundClock(
+        secondsLeft: 11,
+        phaseSeconds: 120,
+        phase: SessionPhase.work,
+      ),
+    );
+
+    expect(find.byKey(const ValueKey<int>(11)), findsNothing);
+  });
+
+  testWidgets('does not pulse during rest, even with time low', (tester) async {
     await pump(
       tester,
       const RoundClock(

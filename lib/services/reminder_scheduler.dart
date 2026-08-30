@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import '../data/boxing_calendar.dart';
 import '../data/quotes.dart';
+import '../models/boxing_event.dart';
 import '../providers/history_provider.dart';
 import '../providers/settings_provider.dart';
 import '../utils/date_helpers.dart';
@@ -25,6 +27,7 @@ class ReminderScheduler {
 
   static const Duration _settleDelay = Duration(milliseconds: 300);
   static const int _nudgeHour = 20;
+  static const int _eventHour = 9;
   static const String _dailyTitle = 'Time to train';
   static const String _nudgeTitle = 'Keep the streak';
 
@@ -41,11 +44,12 @@ class ReminderScheduler {
     _history.removeListener(_onChanged);
   }
 
-  /// Rewrites both reminders from the current settings and history.
+  /// Rewrites the reminders from the current settings and history.
   Future<void> sync() async {
     final now = _clock();
     await _syncDailyReminder(now);
     await _syncStreakNudge(now);
+    await _syncEventReminder(now);
   }
 
   void _onChanged() {
@@ -64,7 +68,7 @@ class ReminderScheduler {
       hour: _settings.reminderHour,
       minute: _settings.reminderMinute,
       title: _dailyTitle,
-      body: quoteOfTheDay(now).text,
+      body: quoteFor(QuoteSurface.reminder, now).text,
     );
   }
 
@@ -80,6 +84,37 @@ class ReminderScheduler {
       title: _nudgeTitle,
       body: _nudgeBody(stats.streakDays),
     );
+  }
+
+  Future<void> _syncEventReminder(DateTime now) async {
+    if (!_settings.eventRemindersEnabled) {
+      await _notifications.cancel(NotificationService.eventReminderId);
+      return;
+    }
+    final event = _eventToAnnounce(now);
+    await _notifications.scheduleOnce(
+      id: NotificationService.eventReminderId,
+      at: _eventTime(now, event),
+      title: event.title,
+      body: event.blurb,
+    );
+  }
+
+  /// Today's event while the morning note can still land, otherwise the next.
+  BoxingEvent _eventToAnnounce(DateTime now) {
+    final today = eventsOn(now);
+    if (today.isNotEmpty && now.hour < _eventHour) {
+      return today.first;
+    }
+    return nextEvents(now, count: 1).first;
+  }
+
+  DateTime _eventTime(DateTime now, BoxingEvent event) {
+    final thisYear = DateTime(now.year, event.month, event.day, _eventHour);
+    if (thisYear.isAfter(now)) {
+      return thisYear;
+    }
+    return DateTime(now.year + 1, event.month, event.day, _eventHour);
   }
 
   /// Tonight at 8 while the day is still open, otherwise tomorrow at 8.

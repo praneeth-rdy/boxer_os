@@ -43,6 +43,9 @@ const List<String> movementTokens = [
   'pivot',
   'circle left',
   'circle right',
+  'cut left',
+  'cut right',
+  'pendulum',
   'exit',
 ];
 

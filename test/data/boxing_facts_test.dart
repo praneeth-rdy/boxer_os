@@ -1,10 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:boxer_os/data/boxing_facts.dart';
+import 'package:boxer_os/models/boxing_fact.dart';
 
 void main() {
-  test('has exactly 24 facts, each with text and a subject', () {
-    expect(boxingFacts.length, 24);
+  test('has exactly 40 facts, each with text and a subject', () {
+    expect(boxingFacts.length, 40);
     for (final fact in boxingFacts) {
       expect(fact.text, isNotEmpty);
       expect(fact.subject, isNotEmpty);
@@ -21,25 +22,68 @@ void main() {
     expect(boxingFacts.first.subject, 'Rocky Marciano');
   });
 
-  group('factOfTheDay', () {
+  test('no duplicate fact text', () {
+    final texts = boxingFacts.map((fact) => fact.text).toSet();
+
+    expect(texts, hasLength(boxingFacts.length));
+  });
+
+  group('factFor', () {
     test('is stable for two moments within the same day', () {
       final morning = DateTime(2026, 3, 10, 6);
       final night = DateTime(2026, 3, 10, 23);
 
-      expect(factOfTheDay(morning), factOfTheDay(night));
+      expect(
+        factFor(FactSurface.home, morning),
+        factFor(FactSurface.home, night),
+      );
     });
 
-    test('is offset from quoteOfTheDay so both do not change together', () {
+    test('gives each surface its own fact on the same day', () {
       final day = DateTime(2026, 1, 1);
 
-      expect(factOfTheDay(day), boxingFacts[7 % boxingFacts.length]);
+      expect(
+        factFor(FactSurface.home, day) == factFor(FactSurface.progress, day),
+        isFalse,
+      );
     });
 
-    test('cycles through the list as the day of year advances', () {
+    test('moves on as the day of year advances', () {
       final day = DateTime(2026, 1, 1);
       final nextDay = DateTime(2026, 1, 2);
 
-      expect(factOfTheDay(nextDay) == factOfTheDay(day), isFalse);
+      expect(
+        factFor(FactSurface.home, nextDay) == factFor(FactSurface.home, day),
+        isFalse,
+      );
+    });
+
+    test('the two surfaces never coincide on any day of a leap year', () {
+      var day = DateTime(2024);
+      final leapYearEnd = DateTime(2025);
+      while (day.isBefore(leapYearEnd)) {
+        expect(
+          factFor(FactSurface.home, day) == factFor(FactSurface.progress, day),
+          isFalse,
+        );
+
+        day = day.add(const Duration(days: 1));
+      }
+    });
+  });
+
+  group('factAfter', () {
+    test('walks the whole list and wraps back to where it started', () {
+      final first = factFor(FactSurface.home, DateTime(2026, 1, 1));
+      var current = first;
+      final seen = <BoxingFact>{first};
+      for (var i = 0; i < boxingFacts.length - 1; i++) {
+        current = factAfter(current);
+        seen.add(current);
+      }
+
+      expect(seen, hasLength(boxingFacts.length));
+      expect(factAfter(current), first);
     });
   });
 

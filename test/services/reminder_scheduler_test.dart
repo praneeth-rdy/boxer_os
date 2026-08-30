@@ -167,7 +167,7 @@ void main() {
         expect(call['id'], NotificationService.dailyReminderId);
         expect(call['hour'], 18);
         expect(call['minute'], 0);
-        expect(call['body'], quoteOfTheDay(now).text);
+        expect(call['body'], quoteFor(QuoteSurface.reminder, now).text);
 
         scheduler.dispose();
       },
@@ -338,6 +338,108 @@ void main() {
 
       final call = notifications.onceCalls.single;
       expect(call['body'], 'Your 1-day streak is on the line tonight.');
+
+      scheduler.dispose();
+    });
+  });
+
+  group('ReminderScheduler.sync event reminder', () {
+    test(
+      "schedules id 3 for today's event at 09:00 when it is still morning",
+      () async {
+        final settings = SettingsProvider();
+        await settings.load();
+        await settings.setEventRemindersEnabled(true);
+        final now = DateTime(2026, 10, 30, 8);
+        final history = HistoryProvider();
+        final notifications = _FakeNotificationService();
+
+        final scheduler = await _buildScheduler(
+          settings: settings,
+          history: history,
+          notifications: notifications,
+          now: now,
+        );
+
+        expect(notifications.onceCalls, hasLength(1));
+        final call = notifications.onceCalls.single;
+        expect(call['id'], NotificationService.eventReminderId);
+        expect(call['at'], DateTime(2026, 10, 30, 9));
+        expect(call['title'], 'The Rumble in the Jungle');
+
+        scheduler.dispose();
+      },
+    );
+
+    test(
+      'schedules the next event once 09:00 has already passed today',
+      () async {
+        final settings = SettingsProvider();
+        await settings.load();
+        await settings.setEventRemindersEnabled(true);
+        final now = DateTime(2026, 10, 30, 10);
+        final history = HistoryProvider();
+        final notifications = _FakeNotificationService();
+
+        final scheduler = await _buildScheduler(
+          settings: settings,
+          history: history,
+          notifications: notifications,
+          now: now,
+        );
+
+        final call = notifications.onceCalls.single;
+        expect(call['title'], 'Foreman, champion at forty-five');
+        expect(call['at'], DateTime(2026, 11, 5, 9));
+
+        scheduler.dispose();
+      },
+    );
+
+    test(
+      'wraps into next year when the next event has already passed this year',
+      () async {
+        final settings = SettingsProvider();
+        await settings.load();
+        await settings.setEventRemindersEnabled(true);
+        final now = DateTime(2026, 12, 27, 9);
+        final history = HistoryProvider();
+        final notifications = _FakeNotificationService();
+
+        final scheduler = await _buildScheduler(
+          settings: settings,
+          history: history,
+          notifications: notifications,
+          now: now,
+        );
+
+        final call = notifications.onceCalls.single;
+        expect(call['title'], 'George Foreman born');
+        expect(call['at'], DateTime(2027, 1, 10, 9));
+
+        scheduler.dispose();
+      },
+    );
+
+    test('the event reminder off by default never schedules', () async {
+      final settings = SettingsProvider();
+      await settings.load();
+      final now = DateTime(2026, 10, 30, 8);
+      final history = HistoryProvider();
+      final notifications = _FakeNotificationService();
+
+      final scheduler = await _buildScheduler(
+        settings: settings,
+        history: history,
+        notifications: notifications,
+        now: now,
+      );
+
+      expect(notifications.onceCalls, isEmpty);
+      expect(
+        notifications.cancelled,
+        contains(NotificationService.eventReminderId),
+      );
 
       scheduler.dispose();
     });

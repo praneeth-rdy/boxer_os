@@ -12,6 +12,19 @@ import 'package:boxer_os/providers/reaction_provider.dart';
 
 const _step = Duration(milliseconds: 10);
 
+/// A Random with a fixed nextDouble and nextInt(0), so a stimulus (dot
+/// position, colour pair, sequence arrows) lands on a known value.
+class _FixedRandom implements Random {
+  @override
+  double nextDouble() => 0.5;
+
+  @override
+  int nextInt(int max) => 0;
+
+  @override
+  bool nextBool() => false;
+}
+
 /// Elapses in small steps so a timer boundary is never overshot mid-jump.
 void _elapseUntil(
   FakeAsync async,
@@ -503,5 +516,425 @@ void main() {
         provider.dispose();
       });
     });
+
+    test(
+      'peripheral: a tap within the hit radius records the reaction time',
+      () {
+        fakeAsync((async) {
+          var now = DateTime(2026, 1, 1);
+          final provider = ReactionProvider(
+            clock: () => now,
+            random: _FixedRandom(),
+          );
+
+          provider.start(ReactionMode.peripheral);
+          async.elapse(const Duration(seconds: 3));
+          _elapseUntil(async, provider, ReactionPhase.stimulus);
+
+          final dot = provider.dotPosition!;
+          expect(dot, const Offset(0.5, 0.5));
+          now = now.add(const Duration(milliseconds: 220));
+          provider.tap(at: dot);
+
+          expect(provider.misses, 0);
+          expect(provider.lastMillis, 220);
+          expect(provider.feedback, '220 ms');
+
+          provider.dispose();
+        });
+      },
+    );
+
+    test(
+      'peripheral: a tap outside the hit radius is a miss with Missed it',
+      () {
+        fakeAsync((async) {
+          var now = DateTime(2026, 1, 1);
+          final provider = ReactionProvider(
+            clock: () => now,
+            random: _FixedRandom(),
+          );
+
+          provider.start(ReactionMode.peripheral);
+          async.elapse(const Duration(seconds: 3));
+          _elapseUntil(async, provider, ReactionPhase.stimulus);
+
+          final dot = provider.dotPosition!;
+          provider.tap(at: dot + const Offset(0.2, 0));
+
+          expect(provider.misses, 1);
+          expect(provider.feedback, 'Missed it');
+
+          provider.dispose();
+        });
+      },
+    );
+
+    test('peripheral: tapping with no position given is a miss', () {
+      fakeAsync((async) {
+        var now = DateTime(2026, 1, 1);
+        final provider = ReactionProvider(clock: () => now, random: Random(1));
+
+        provider.start(ReactionMode.peripheral);
+        async.elapse(const Duration(seconds: 3));
+        _elapseUntil(async, provider, ReactionPhase.stimulus);
+
+        provider.tap();
+
+        expect(provider.misses, 1);
+        expect(provider.feedback, 'Missed it');
+
+        provider.dispose();
+      });
+    });
+
+    test('colour: tapping the ink colour records the reaction time', () {
+      fakeAsync((async) {
+        var now = DateTime(2026, 1, 1);
+        final provider = ReactionProvider(
+          clock: () => now,
+          random: _FixedRandom(),
+        );
+
+        provider.start(ReactionMode.colour);
+        async.elapse(const Duration(seconds: 3));
+        _elapseUntil(async, provider, ReactionPhase.stimulus);
+
+        expect(provider.inkColour, isNot(provider.wordColour));
+        now = now.add(const Duration(milliseconds: 240));
+        provider.tap(colour: provider.inkColour);
+
+        expect(provider.misses, 0);
+        expect(provider.lastMillis, 240);
+        expect(provider.feedback, '240 ms');
+
+        provider.dispose();
+      });
+    });
+
+    test('colour: tapping the word colour is a miss with Wrong colour', () {
+      fakeAsync((async) {
+        var now = DateTime(2026, 1, 1);
+        final provider = ReactionProvider(
+          clock: () => now,
+          random: _FixedRandom(),
+        );
+
+        provider.start(ReactionMode.colour);
+        async.elapse(const Duration(seconds: 3));
+        _elapseUntil(async, provider, ReactionPhase.stimulus);
+
+        provider.tap(colour: provider.wordColour);
+
+        expect(provider.misses, 1);
+        expect(provider.feedback, 'Wrong colour');
+
+        provider.dispose();
+      });
+    });
+
+    test(
+      'sequence: trial 1 shows two arrows, then hides them and starts the clock',
+      () {
+        fakeAsync((async) {
+          var now = DateTime(2026, 1, 1);
+          final provider = ReactionProvider(
+            clock: () => now,
+            random: Random(1),
+          );
+
+          provider.start(ReactionMode.sequence);
+          async.elapse(const Duration(seconds: 3));
+          _elapseUntil(async, provider, ReactionPhase.stimulus);
+
+          expect(provider.sequence, hasLength(2));
+          expect(provider.isShowingSequence, isTrue);
+
+          async.elapse(const Duration(milliseconds: 1200));
+          expect(provider.phase, ReactionPhase.stimulus);
+          expect(provider.isShowingSequence, isFalse);
+
+          provider.dispose();
+        });
+      },
+    );
+
+    test('sequence: taps ignored while the arrows are still showing', () {
+      fakeAsync((async) {
+        var now = DateTime(2026, 1, 1);
+        final provider = ReactionProvider(clock: () => now, random: Random(1));
+
+        provider.start(ReactionMode.sequence);
+        async.elapse(const Duration(seconds: 3));
+        _elapseUntil(async, provider, ReactionPhase.stimulus);
+
+        provider.tap(direction: provider.sequence.first);
+        expect(provider.entered, 0);
+        expect(provider.phase, ReactionPhase.stimulus);
+
+        provider.dispose();
+      });
+    });
+
+    test(
+      'sequence: reproducing the arrows in order records the reaction time',
+      () {
+        fakeAsync((async) {
+          var now = DateTime(2026, 1, 1);
+          final provider = ReactionProvider(
+            clock: () => now,
+            random: Random(1),
+          );
+
+          provider.start(ReactionMode.sequence);
+          async.elapse(const Duration(seconds: 3));
+          _elapseUntil(async, provider, ReactionPhase.stimulus);
+
+          final sequence = provider.sequence;
+          async.elapse(const Duration(milliseconds: 1200));
+          expect(provider.isShowingSequence, isFalse);
+
+          now = now.add(const Duration(milliseconds: 300));
+          provider.tap(direction: sequence[0]);
+          expect(provider.entered, 1);
+          expect(provider.phase, ReactionPhase.stimulus);
+
+          now = now.add(const Duration(milliseconds: 100));
+          provider.tap(direction: sequence[1]);
+
+          expect(provider.misses, 0);
+          expect(provider.lastMillis, 400);
+          expect(provider.feedback, '400 ms');
+
+          provider.dispose();
+        });
+      },
+    );
+
+    test('sequence: a wrong arrow is a miss with Wrong order', () {
+      fakeAsync((async) {
+        var now = DateTime(2026, 1, 1);
+        final provider = ReactionProvider(clock: () => now, random: Random(1));
+
+        provider.start(ReactionMode.sequence);
+        async.elapse(const Duration(seconds: 3));
+        _elapseUntil(async, provider, ReactionPhase.stimulus);
+
+        final sequence = provider.sequence;
+        async.elapse(const Duration(milliseconds: 1200));
+
+        final wrong = ReactionDirection.values.firstWhere(
+          (direction) => direction != sequence[0],
+        );
+        provider.tap(direction: wrong);
+
+        expect(provider.misses, 1);
+        expect(provider.feedback, 'Wrong order');
+        expect(provider.phase, ReactionPhase.feedback);
+
+        provider.dispose();
+      });
+    });
+
+    test('sequence: no tap within 2s per arrow times out as a miss', () {
+      fakeAsync((async) {
+        var now = DateTime(2026, 1, 1);
+        final provider = ReactionProvider(clock: () => now, random: Random(1));
+
+        provider.start(ReactionMode.sequence);
+        async.elapse(const Duration(seconds: 3));
+        _elapseUntil(async, provider, ReactionPhase.stimulus);
+
+        final length = provider.sequence.length;
+        async.elapse(Duration(milliseconds: 600 * length));
+        expect(provider.isShowingSequence, isFalse);
+
+        async.elapse(Duration(milliseconds: 2000 * length));
+
+        expect(provider.misses, 1);
+        expect(provider.feedback, 'Too slow');
+        expect(provider.phase, ReactionPhase.feedback);
+
+        provider.dispose();
+      });
+    });
+
+    test('sequence: trial 4 shows three arrows and trial 8 shows four', () {
+      fakeAsync((async) {
+        var now = DateTime(2026, 1, 1);
+        final provider = ReactionProvider(clock: () => now, random: Random(1));
+
+        provider.start(ReactionMode.sequence);
+        async.elapse(const Duration(seconds: 3));
+
+        for (var trial = 1; trial <= 7; trial++) {
+          _elapseUntil(async, provider, ReactionPhase.stimulus);
+          if (trial == 4) {
+            expect(provider.sequence, hasLength(3));
+          }
+          final sequence = provider.sequence;
+          async.elapse(Duration(milliseconds: 600 * sequence.length));
+          for (final direction in sequence) {
+            provider.tap(direction: direction);
+          }
+          async.elapse(const Duration(milliseconds: 700));
+        }
+
+        _elapseUntil(async, provider, ReactionPhase.stimulus);
+        expect(provider.sequence, hasLength(4));
+
+        provider.dispose();
+      });
+    });
+
+    test(
+      'sequence: endurance grows the sequence every 3 trials, capped at 4',
+      () {
+        fakeAsync((async) {
+          var now = DateTime(2026, 1, 1);
+          final provider = ReactionProvider(
+            clock: () => now,
+            random: Random(1),
+          );
+
+          provider.start(
+            ReactionMode.sequence,
+            format: ReactionFormat.endurance,
+          );
+          async.elapse(const Duration(seconds: 3));
+
+          final lengths = <int>[];
+          var iterations = 0;
+          while (provider.phase != ReactionPhase.complete) {
+            _elapseUntil(async, provider, ReactionPhase.stimulus);
+            final sequence = provider.sequence;
+            lengths.add(sequence.length);
+            // Advances the fake clock, not just fake_async's timer queue, so
+            // the endurance window (measured off `now`) actually elapses.
+            now = now.add(const Duration(milliseconds: 9000));
+            async.elapse(Duration(milliseconds: 600 * sequence.length));
+            for (final direction in sequence) {
+              provider.tap(direction: direction);
+            }
+            async.elapse(const Duration(milliseconds: 700));
+            iterations++;
+            if (iterations > 30) {
+              fail('endurance run never completed');
+            }
+          }
+
+          expect(lengths.take(3), everyElement(2));
+          expect(lengths.length >= 7 ? lengths[6] : lengths.last, 4);
+          expect(lengths.every((length) => length <= 4), isTrue);
+
+          provider.dispose();
+        });
+      },
+    );
+
+    test('sound: isSoundMode is true only in sound mode', () {
+      fakeAsync((async) {
+        final tap = ReactionProvider(random: Random(1));
+        final sound = ReactionProvider(random: Random(1));
+
+        tap.start(ReactionMode.tap);
+        sound.start(ReactionMode.sound);
+
+        expect(tap.isSoundMode, isFalse);
+        expect(sound.isSoundMode, isTrue);
+
+        tap.dispose();
+        sound.dispose();
+      });
+    });
+
+    test('sound: a stimulus behaves like tap mode, hit and timeout alike', () {
+      fakeAsync((async) {
+        var now = DateTime(2026, 1, 1);
+        final provider = ReactionProvider(clock: () => now, random: Random(1));
+
+        provider.start(ReactionMode.sound);
+        async.elapse(const Duration(seconds: 3));
+        _elapseUntil(async, provider, ReactionPhase.stimulus);
+
+        expect(provider.isGo, isTrue);
+        now = now.add(const Duration(milliseconds: 260));
+        provider.tap();
+
+        expect(provider.misses, 0);
+        expect(provider.lastMillis, 260);
+        expect(provider.feedback, '260 ms');
+
+        provider.dispose();
+      });
+    });
+
+    test('sound: finishing ten trials builds a result for sound mode', () {
+      fakeAsync((async) {
+        var now = DateTime(2026, 1, 1);
+        final provider = ReactionProvider(clock: () => now, random: Random(1));
+
+        provider.start(ReactionMode.sound);
+        async.elapse(const Duration(seconds: 3));
+
+        for (var trial = 0; trial < ReactionProvider.trialCount; trial++) {
+          _elapseUntil(async, provider, ReactionPhase.stimulus);
+          now = now.add(const Duration(milliseconds: 200));
+          provider.tap();
+          async.elapse(const Duration(milliseconds: 700));
+        }
+
+        expect(provider.phase, ReactionPhase.complete);
+        expect(provider.result!.mode, ReactionMode.sound);
+        expect(provider.result!.reactionMillis, hasLength(10));
+
+        provider.dispose();
+      });
+    });
+
+    for (final mode in [
+      ReactionMode.peripheral,
+      ReactionMode.colour,
+      ReactionMode.sound,
+    ]) {
+      test('endurance format works for ${mode.name}', () {
+        fakeAsync((async) {
+          var now = DateTime(2026, 1, 1);
+          final provider = ReactionProvider(
+            clock: () => now,
+            random: _FixedRandom(),
+          );
+
+          provider.start(mode, format: ReactionFormat.endurance);
+          async.elapse(const Duration(seconds: 3));
+
+          var iterations = 0;
+          while (provider.phase != ReactionPhase.complete) {
+            _elapseUntil(async, provider, ReactionPhase.stimulus);
+            now = now.add(const Duration(milliseconds: 4000));
+            switch (mode) {
+              case ReactionMode.peripheral:
+                provider.tap(at: provider.dotPosition);
+              case ReactionMode.colour:
+                provider.tap(colour: provider.inkColour);
+              default:
+                provider.tap();
+            }
+            async.elapse(const Duration(milliseconds: 700));
+            iterations++;
+            if (iterations > 30) {
+              fail('endurance run never completed for ${mode.name}');
+            }
+          }
+
+          final result = provider.result;
+          expect(result, isNotNull);
+          expect(result!.format, ReactionFormat.endurance);
+          expect(result.durationSeconds, ReactionProvider.enduranceSeconds);
+
+          provider.dispose();
+        });
+      });
+    }
   });
 }

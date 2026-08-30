@@ -7,11 +7,13 @@ import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:boxer_os/models/incoming_punch.dart';
+import 'package:boxer_os/models/reaction_direction.dart';
 import 'package:boxer_os/models/reaction_mode.dart';
 import 'package:boxer_os/pages/reaction_page.dart';
 import 'package:boxer_os/providers/history_provider.dart';
 import 'package:boxer_os/providers/reaction_provider.dart';
 import 'package:boxer_os/providers/settings_provider.dart';
+import 'package:boxer_os/services/audio_service.dart';
 import 'package:boxer_os/theme/app_theme.dart';
 import 'package:boxer_os/widgets/defense_grid.dart';
 import 'package:boxer_os/widgets/reaction_arena.dart';
@@ -32,10 +34,22 @@ class _FixedRandom implements Random {
   bool nextBool() => false;
 }
 
+/// Records every playTick call instead of touching the audio plugin.
+class _FakeAudioService extends AudioService {
+  int tickCalls = 0;
+
+  @override
+  Future<bool> playTick() async {
+    tickCalls++;
+    return true;
+  }
+}
+
 List<SingleChildWidget> _providers({
   required ReactionProvider reaction,
   HistoryProvider? history,
   SettingsProvider? settings,
+  AudioService? audio,
 }) => [
   ChangeNotifierProvider<ReactionProvider>.value(value: reaction),
   ChangeNotifierProvider<HistoryProvider>.value(
@@ -44,6 +58,7 @@ List<SingleChildWidget> _providers({
   ChangeNotifierProvider<SettingsProvider>.value(
     value: settings ?? SettingsProvider(),
   ),
+  Provider<AudioService>.value(value: audio ?? AudioService()),
 ];
 
 /// Unmounts the page (so its own dispose() cancels the run safely) before
@@ -93,6 +108,9 @@ void main() {
   testWidgets(
     'walks from the mode picker through the countdown, stimulus and result screen',
     (tester) async {
+      // The Tap card now sits under the PURE SPEED group, below the BOXING
+      // group above it, past the default 800x600 test surface.
+      _growViewport(tester);
       SharedPreferences.setMockInitialValues({});
       var now = DateTime(2026, 1, 1);
       final reaction = ReactionProvider(clock: () => now);
@@ -152,6 +170,7 @@ void main() {
   testWidgets('saves the result to history exactly once on completion', (
     tester,
   ) async {
+    _growViewport(tester);
     SharedPreferences.setMockInitialValues({});
     var now = DateTime(2026, 1, 1);
     final reaction = ReactionProvider(clock: () => now);
@@ -194,6 +213,7 @@ void main() {
   testWidgets('Stop cancels a running test and returns to the mode picker', (
     tester,
   ) async {
+    _growViewport(tester);
     final reaction = ReactionProvider(clock: () => DateTime(2026, 1, 1));
 
     await tester.pumpWidget(
@@ -422,6 +442,7 @@ void main() {
   testWidgets('Endurance header counts down and result shows the decay line', (
     tester,
   ) async {
+    _growViewport(tester);
     SharedPreferences.setMockInitialValues({});
     var now = DateTime(2026, 1, 1);
     final reaction = ReactionProvider(clock: () => now, random: _FixedRandom());
@@ -473,4 +494,219 @@ void main() {
 
     reaction.dispose();
   });
+
+  testWidgets(
+    'mode picker shows eight cards under BOXING and PURE SPEED eyebrows',
+    (tester) async {
+      _growViewport(tester);
+      SharedPreferences.setMockInitialValues({});
+      final reaction = ReactionProvider(clock: () => DateTime(2026, 1, 1));
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: _providers(reaction: reaction),
+          child: const MaterialApp(home: ReactionPage()),
+        ),
+      );
+
+      expect(find.text('BOXING'), findsOneWidget);
+      expect(find.text('PURE SPEED'), findsOneWidget);
+      for (final label in [
+        'Tap',
+        'Direction',
+        'Defense',
+        'Go / No-go',
+        'Peripheral',
+        'Colour call',
+        'Sequence',
+        'Sound',
+      ]) {
+        expect(find.text(label), findsOneWidget);
+      }
+
+      // Defense, Go / No-go and Sequence train ring skills, so their card sits
+      // under BOXING, above where PURE SPEED starts.
+      final boxingEyebrow = tester.getTopLeft(find.text('BOXING')).dy;
+      final speedEyebrow = tester.getTopLeft(find.text('PURE SPEED')).dy;
+      final sequenceCard = tester.getTopLeft(find.text('Sequence')).dy;
+      final peripheralCard = tester.getTopLeft(find.text('Peripheral')).dy;
+      expect(boxingEyebrow, lessThan(sequenceCard));
+      expect(sequenceCard, lessThan(speedEyebrow));
+      expect(speedEyebrow, lessThan(peripheralCard));
+
+      await _tearDownRunning(tester, reaction);
+    },
+  );
+
+  testWidgets('Peripheral: tapping the dot records the reaction time', (
+    tester,
+  ) async {
+    _growViewport(tester);
+    SharedPreferences.setMockInitialValues({});
+    var now = DateTime(2026, 1, 1);
+    final reaction = ReactionProvider(
+      clock: () => now,
+      random: _FixedRandom(doubleValue: 0.5),
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: _providers(reaction: reaction),
+        child: const MaterialApp(home: ReactionPage()),
+      ),
+    );
+
+    await tester.tap(find.text('Peripheral'));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 3));
+    await _elapseUntil(tester, reaction, ReactionPhase.stimulus);
+
+    final dot = reaction.dotPosition!;
+    final arena = tester.getTopLeft(find.byType(ReactionArena));
+    final size = tester.getSize(find.byType(ReactionArena));
+    now = now.add(const Duration(milliseconds: 210));
+    await tester.tapAt(
+      Offset(arena.dx + dot.dx * size.width, arena.dy + dot.dy * size.height),
+    );
+    await tester.pump();
+
+    expect(reaction.phase, ReactionPhase.feedback);
+    expect(reaction.feedback, '210 ms');
+
+    await _tearDownRunning(tester, reaction);
+  });
+
+  testWidgets(
+    'Colour call: tapping the ink colour zone records the reaction time',
+    (tester) async {
+      _growViewport(tester);
+      SharedPreferences.setMockInitialValues({});
+      var now = DateTime(2026, 1, 1);
+      final reaction = ReactionProvider(
+        clock: () => now,
+        random: _FixedRandom(),
+      );
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: _providers(reaction: reaction),
+          child: const MaterialApp(home: ReactionPage()),
+        ),
+      );
+
+      await tester.tap(find.text('Colour call'));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 3));
+      await _elapseUntil(tester, reaction, ReactionPhase.stimulus);
+
+      final inkLabel = reaction.inkColour.label;
+      now = now.add(const Duration(milliseconds: 260));
+      await tester.tap(find.text(inkLabel));
+      await tester.pump();
+
+      expect(reaction.phase, ReactionPhase.feedback);
+      expect(reaction.feedback, '260 ms');
+
+      await _tearDownRunning(tester, reaction);
+    },
+  );
+
+  testWidgets(
+    'Sequence: shows the arrows, then reproducing them in order records the reaction time',
+    (tester) async {
+      _growViewport(tester);
+      SharedPreferences.setMockInitialValues({});
+      var now = DateTime(2026, 1, 1);
+      final reaction = ReactionProvider(clock: () => now, random: Random(1));
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: _providers(reaction: reaction),
+          child: const MaterialApp(home: ReactionPage()),
+        ),
+      );
+
+      await tester.tap(find.text('Sequence'));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 3));
+      await _elapseUntil(tester, reaction, ReactionPhase.stimulus);
+
+      final sequence = reaction.sequence;
+      expect(reaction.isShowingSequence, isTrue);
+      expect(find.byIcon(sequence.first.icon), findsWidgets);
+
+      await tester.pump(Duration(milliseconds: 600 * sequence.length));
+      expect(reaction.isShowingSequence, isFalse);
+
+      // Fractions of the arena itself: SequencePad splits it into a 1:2:1
+      // column of up / (left | right) / down edge zones.
+      final directionFractions = {
+        ReactionDirection.up: const Offset(0.5, 0.1),
+        ReactionDirection.left: const Offset(0.1, 0.5),
+        ReactionDirection.right: const Offset(0.9, 0.5),
+        ReactionDirection.down: const Offset(0.5, 0.9),
+      };
+      final arena = tester.getTopLeft(find.byType(ReactionArena));
+      final size = tester.getSize(find.byType(ReactionArena));
+      for (final direction in sequence) {
+        final fraction = directionFractions[direction]!;
+        await tester.tapAt(
+          Offset(
+            arena.dx + fraction.dx * size.width,
+            arena.dy + fraction.dy * size.height,
+          ),
+        );
+        await tester.pump();
+      }
+
+      expect(reaction.phase, ReactionPhase.feedback);
+      expect(reaction.misses, 0);
+
+      await _tearDownRunning(tester, reaction);
+    },
+  );
+
+  testWidgets(
+    'Sound: stays dark during the wait and plays one tick per stimulus',
+    (tester) async {
+      _growViewport(tester);
+      SharedPreferences.setMockInitialValues({});
+      var now = DateTime(2026, 1, 1);
+      final audio = _FakeAudioService();
+      final reaction = ReactionProvider(
+        clock: () => now,
+        random: _FixedRandom(),
+      );
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: _providers(reaction: reaction, audio: audio),
+          child: const MaterialApp(home: ReactionPage()),
+        ),
+      );
+
+      await tester.tap(find.text('Sound'));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 3));
+
+      expect(reaction.phase, ReactionPhase.waiting);
+      expect(_arenaColor(tester), AppTheme.ink);
+      expect(audio.tickCalls, 0);
+
+      await _elapseUntil(tester, reaction, ReactionPhase.stimulus);
+      expect(audio.tickCalls, 1);
+      expect(_arenaColor(tester), AppTheme.ink);
+
+      now = now.add(const Duration(milliseconds: 200));
+      await tester.tap(find.byType(ReactionArena));
+      await tester.pump();
+      expect(reaction.phase, ReactionPhase.feedback);
+
+      await tester.pump(const Duration(milliseconds: 700));
+      await _elapseUntil(tester, reaction, ReactionPhase.stimulus);
+      expect(audio.tickCalls, 2);
+
+      await _tearDownRunning(tester, reaction);
+    },
+  );
 }

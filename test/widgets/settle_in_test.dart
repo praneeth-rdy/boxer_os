@@ -11,10 +11,7 @@ void main() {
     return tester.pumpWidget(
       MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: child,
-        ),
+        child: Directionality(textDirection: TextDirection.ltr, child: child),
       ),
     );
   }
@@ -32,20 +29,19 @@ void main() {
     expect(opacityOf(tester), 1);
   });
 
-  testWidgets(
-    'index 2 is still transparent at 50ms and opaque by 400ms',
-    (tester) async {
-      await pump(tester, const SettleIn(index: 2, child: Text('hello')));
+  testWidgets('index 2 is still transparent at 50ms and opaque by 400ms', (
+    tester,
+  ) async {
+    await pump(tester, const SettleIn(index: 2, child: Text('hello')));
 
-      expect(opacityOf(tester), 0);
+    expect(opacityOf(tester), 0);
 
-      await tester.pump(const Duration(milliseconds: 50));
-      expect(opacityOf(tester), lessThan(1));
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(opacityOf(tester), lessThan(1));
 
-      await tester.pump(const Duration(milliseconds: 350));
-      expect(opacityOf(tester), 1);
-    },
-  );
+    await tester.pump(const Duration(milliseconds: 350));
+    expect(opacityOf(tester), 1);
+  });
 
   testWidgets('renders its child', (tester) async {
     await pump(tester, const SettleIn(child: Text('hello')));

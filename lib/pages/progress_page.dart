@@ -73,7 +73,7 @@ class ProgressPage extends StatelessWidget {
                   child: SkillCard(
                     title: 'History',
                     description: _historyCaption(history.sessions),
-                    icon: Icons.menu_book_rounded,
+                    icon: Icons.history_rounded,
                     onTap: () => _openHistory(context),
                   ),
                 ),
@@ -106,7 +106,13 @@ class ProgressPage extends StatelessWidget {
                   const SizedBox(height: AppTheme.spaceMd),
                   SettleIn(index: 4, child: _AllTimeRow(stats: stats)),
                   const SizedBox(height: AppTheme.spaceXl),
-                  SettleIn(index: 5, child: FactCard(fact: factOfTheDay(now))),
+                  SettleIn(
+                    index: 5,
+                    child: FactCard(
+                      fact: factFor(FactSurface.progress, now),
+                      cycles: true,
+                    ),
+                  ),
                 ],
               ],
             );
@@ -350,26 +356,35 @@ class _ModeBests extends StatelessWidget {
 
   final Map<ReactionMode, int> bestByMode;
 
+  static const int _perLine = 3;
+
   @override
   Widget build(BuildContext context) {
     final entries = [
       for (final mode in ReactionMode.values)
         if (bestByMode[mode] case final best?) MapEntry(mode, best),
     ];
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (var index = 0; index < entries.length; index++) ...[
-          if (index > 0) const SizedBox(width: AppTheme.spaceSm),
-          Expanded(
-            child: StatTile(
-              value: entries[index].value,
-              suffix: ' ms',
-              label: entries[index].key.label,
-            ),
-          ),
-        ],
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width =
+            (constraints.maxWidth - AppTheme.spaceSm * (_perLine - 1)) /
+            _perLine;
+        return Wrap(
+          spacing: AppTheme.spaceSm,
+          runSpacing: AppTheme.spaceSm,
+          children: [
+            for (final entry in entries)
+              SizedBox(
+                width: width,
+                child: StatTile(
+                  value: entry.value,
+                  suffix: ' ms',
+                  label: entry.key.label,
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }
@@ -436,7 +451,10 @@ class _EmptyProgress extends StatelessWidget {
           'streak and the badges you earn.',
       actionLabel: 'Start a session',
       onAction: () => context.read<ShellProvider>().showTab(_trainTab),
-      extra: QuoteCard(quote: quoteOfTheDay(now)),
+      extra: QuoteCard(
+        quote: quoteFor(QuoteSurface.progress, now),
+        cycles: true,
+      ),
     );
   }
 }

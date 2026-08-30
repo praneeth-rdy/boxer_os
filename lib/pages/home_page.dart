@@ -3,18 +3,24 @@ import 'dart:math' show pi, sin;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../data/boxing_calendar.dart';
 import '../data/boxing_facts.dart';
+import '../data/legends.dart';
 import '../data/quotes.dart';
+import '../models/legend.dart';
 import '../models/workout.dart';
 import '../providers/history_provider.dart';
 import '../providers/settings_provider.dart';
+import '../providers/shell_provider.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_theme.dart';
 import '../utils/duration_format.dart';
 import '../utils/recommendation.dart';
 import '../utils/session_launcher.dart';
 import '../utils/training_stats.dart';
+import '../widgets/event_card.dart';
 import '../widgets/fact_card.dart';
+import '../widgets/legend_card.dart';
 import '../widgets/pill_button.dart';
 import '../widgets/quick_action.dart';
 import '../widgets/quote_card.dart';
@@ -23,11 +29,13 @@ import '../widgets/section_header.dart';
 import '../widgets/session_tile.dart';
 import '../widgets/settle_in.dart';
 import 'combos_page.dart';
+import 'legend_story_page.dart';
 import 'reaction_page.dart';
 import 'session_detail_page.dart';
 import 'settings_page.dart';
 import 'workout_detail_page.dart';
 
+const int _cornerTab = 3;
 const int _quickRounds = 3;
 const int _quickWorkSeconds = 180;
 const int _quickRestSeconds = 60;
@@ -35,9 +43,18 @@ const int _afternoonHour = 12;
 const int _eveningHour = 18;
 const double _startHeight = 56;
 
+final TextStyle _ghostLink = AppTheme.bodyStrong.copyWith(
+  color: AppTheme.chalkMuted,
+  decoration: TextDecoration.underline,
+  decorationColor: AppTheme.chalkMuted,
+);
+
 /// The command centre: the streak, today's session and the shortcuts.
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({this.clock = DateTime.now, super.key});
+
+  /// Injectable so a test can render the page on any date.
+  final DateTime Function() clock;
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +63,14 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         child: Consumer2<HistoryProvider, SettingsProvider>(
           builder: (context, history, settings, _) {
-            final now = DateTime.now();
+            final now = clock();
             final stats = TrainingStats.fromSessions(
               history.sessions,
               now: now,
             );
             final sessions = history.sessions;
+            final legend = legendOfTheWeek(now);
+            final today = eventsOn(now);
             final hasHistory = sessions.isNotEmpty;
             return ListView(
               padding: const EdgeInsets.all(AppTheme.spaceLg),
@@ -68,14 +87,48 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 SettleIn(index: 1, child: _StreakStrip(stats: stats)),
+                if (today.isNotEmpty) ...[
+                  const SizedBox(height: AppTheme.spaceMd),
+                  const SettleIn(
+                    index: 2,
+                    child: Text('TODAY IN BOXING', style: AppTheme.label),
+                  ),
+                  const SizedBox(height: AppTheme.spaceSm),
+                  SettleIn(index: 2, child: EventCard(event: today.first)),
+                ],
                 const SizedBox(height: AppTheme.spaceMd),
                 SettleIn(
                   index: 2,
-                  child: QuoteCard(quote: quoteOfTheDay(now), compact: true),
+                  child: QuoteCard(
+                    quote: quoteFor(QuoteSurface.home, now),
+                    compact: true,
+                    cycles: true,
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spaceXl),
+                const SettleIn(
+                  index: 3,
+                  child: Text('LEGEND OF THE WEEK', style: AppTheme.label),
+                ),
+                const SizedBox(height: AppTheme.spaceMd),
+                SettleIn(
+                  index: 3,
+                  child: LegendCard(
+                    legend: legend,
+                    featured: true,
+                    onTap: () => _openLegend(context, legend),
+                  ),
+                ),
+                Center(
+                  child: TextButton(
+                    onPressed: () =>
+                        context.read<ShellProvider>().showTab(_cornerTab),
+                    child: Text('More in Corner', style: _ghostLink),
+                  ),
                 ),
                 const SizedBox(height: AppTheme.spaceXl),
                 SettleIn(
-                  index: 3,
+                  index: 4,
                   child: Text(
                     hasHistory ? "TODAY'S SESSION" : 'YOUR FIRST SESSION',
                     style: AppTheme.label,
@@ -83,7 +136,7 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: AppTheme.spaceMd),
                 SettleIn(
-                  index: 3,
+                  index: 4,
                   child: _RecommendedCard(
                     workout: recommendWorkout(
                       stats,
@@ -95,22 +148,28 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: AppTheme.spaceXl),
                 const SettleIn(
-                  index: 4,
+                  index: 5,
                   child: Text('QUICK ACTIONS', style: AppTheme.label),
                 ),
                 const SizedBox(height: AppTheme.spaceMd),
-                const SettleIn(index: 4, child: _QuickActionRow()),
+                const SettleIn(index: 5, child: _QuickActionRow()),
                 const SizedBox(height: AppTheme.spaceXl),
-                SettleIn(index: 5, child: FactCard(fact: factOfTheDay(now))),
+                SettleIn(
+                  index: 6,
+                  child: FactCard(
+                    fact: factFor(FactSurface.home, now),
+                    cycles: true,
+                  ),
+                ),
                 if (hasHistory) ...[
                   const SizedBox(height: AppTheme.spaceXl),
                   const SettleIn(
-                    index: 6,
+                    index: 7,
                     child: Text('LAST SESSION', style: AppTheme.label),
                   ),
                   const SizedBox(height: AppTheme.spaceMd),
                   SettleIn(
-                    index: 6,
+                    index: 7,
                     child: SessionTile(
                       record: sessions.first,
                       onTap: () => _openSession(context, sessions.first.id),
@@ -142,6 +201,12 @@ class HomePage extends StatelessWidget {
     Navigator.of(
       context,
     ).push(MaterialPageRoute<void>(builder: (_) => SessionDetailPage(id: id)));
+  }
+
+  void _openLegend(BuildContext context, Legend legend) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => LegendStoryPage(legend: legend)),
+    );
   }
 }
 
@@ -266,14 +331,7 @@ class _RecommendedCard extends StatelessWidget {
           Center(
             child: TextButton(
               onPressed: () => _openDetail(context),
-              child: Text(
-                'See details',
-                style: AppTheme.bodyStrong.copyWith(
-                  color: AppTheme.chalkMuted,
-                  decoration: TextDecoration.underline,
-                  decorationColor: AppTheme.chalkMuted,
-                ),
-              ),
+              child: Text('See details', style: _ghostLink),
             ),
           ),
         ],

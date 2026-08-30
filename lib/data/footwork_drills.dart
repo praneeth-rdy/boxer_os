@@ -289,6 +289,289 @@ const List<Workout> footworkDrills = [
       ),
     ],
   ),
+  Workout(
+    id: 'fw_in_and_out',
+    name: 'In and Out',
+    type: TrainingType.footwork,
+    difficulty: Difficulty.beginner,
+    description:
+        'Enter and leave range on your own terms. Three rounds of stepping in, '
+        'touching, and getting straight back out.',
+    rounds: [
+      RoundSpec(
+        workSeconds: 90,
+        restSeconds: 30,
+        focus: 'Find the range',
+        cues: [
+          RoundCue(atSecond: 4, text: 'bounce'),
+          RoundCue(atSecond: 20, text: 'step in'),
+          RoundCue(atSecond: 38, text: 'step out'),
+          RoundCue(atSecond: 56, text: 'step in, step out'),
+          RoundCue(atSecond: 74, text: 'reset'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 90,
+        restSeconds: 30,
+        focus: 'Touch and leave',
+        cues: [
+          RoundCue(atSecond: 4, text: 'step in'),
+          RoundCue(atSecond: 20, text: '1, step out'),
+          RoundCue(atSecond: 38, text: 'reset'),
+          RoundCue(atSecond: 56, text: 'step in, 1, step out'),
+          RoundCue(atSecond: 74, text: 'bounce'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 90,
+        restSeconds: 30,
+        focus: 'In and out on the bounce',
+        cues: [
+          RoundCue(atSecond: 4, text: 'bounce'),
+          RoundCue(atSecond: 20, text: '1, step out'),
+          RoundCue(atSecond: 38, text: 'step in, reset'),
+          RoundCue(atSecond: 56, text: '1, step out'),
+          RoundCue(atSecond: 74, text: 'reset'),
+        ],
+      ),
+    ],
+  ),
+  Workout(
+    id: 'fw_lateral_lines',
+    name: 'Lateral Lines',
+    type: TrainingType.footwork,
+    difficulty: Difficulty.beginner,
+    description:
+        'Side to side with your head off the centre line. Three rounds of '
+        'lateral steps and circles, never crossing your feet.',
+    rounds: [
+      RoundSpec(
+        workSeconds: 90,
+        restSeconds: 30,
+        focus: 'Step both ways',
+        cues: [
+          RoundCue(atSecond: 4, text: 'step left'),
+          RoundCue(atSecond: 20, text: 'step right'),
+          RoundCue(atSecond: 38, text: 'step left, step right'),
+          RoundCue(atSecond: 56, text: 'hold'),
+          RoundCue(atSecond: 74, text: 'step right, step left'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 90,
+        restSeconds: 30,
+        focus: 'Add the circle',
+        cues: [
+          RoundCue(atSecond: 4, text: 'circle left'),
+          RoundCue(atSecond: 20, text: 'step right'),
+          RoundCue(atSecond: 38, text: 'circle right'),
+          RoundCue(atSecond: 56, text: 'step left'),
+          RoundCue(atSecond: 74, text: 'hold'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 90,
+        restSeconds: 30,
+        focus: 'Change direction',
+        cues: [
+          RoundCue(atSecond: 4, text: 'circle left'),
+          RoundCue(atSecond: 20, text: 'step right, hold'),
+          RoundCue(atSecond: 38, text: 'circle right'),
+          RoundCue(atSecond: 56, text: 'step left, hold'),
+          RoundCue(atSecond: 74, text: 'circle left'),
+        ],
+      ),
+    ],
+  ),
+  Workout(
+    id: 'fw_switch_and_go',
+    name: 'Switch and Go',
+    type: TrainingType.footwork,
+    difficulty: Difficulty.intermediate,
+    description:
+        'Change the lead under control, then go. Four rounds of stance '
+        'switches with punches on the way in and a clean exit.',
+    rounds: [
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Switch on the spot',
+        cues: [
+          RoundCue(atSecond: 4, text: 'switch'),
+          RoundCue(atSecond: 30, text: 'switch, hold'),
+          RoundCue(atSecond: 55, text: 'switch, switch'),
+          RoundCue(atSecond: 80, text: 'switch, reset'),
+          RoundCue(atSecond: 105, text: 'hold'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Switch and step in',
+        cues: [
+          RoundCue(atSecond: 4, text: 'switch'),
+          RoundCue(atSecond: 30, text: 'switch, step in'),
+          RoundCue(atSecond: 55, text: 'step in, switch'),
+          RoundCue(atSecond: 80, text: 'switch, step in, exit'),
+          RoundCue(atSecond: 105, text: 'reset'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Punch off the switch',
+        cues: [
+          RoundCue(atSecond: 4, text: 'switch, 1-2'),
+          RoundCue(atSecond: 30, text: 'step in, 1-2'),
+          RoundCue(atSecond: 55, text: 'switch, 1-2, exit'),
+          RoundCue(atSecond: 80, text: '1-2, switch'),
+          RoundCue(atSecond: 105, text: 'exit'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Switch, go, get out',
+        cues: [
+          RoundCue(atSecond: 4, text: 'switch'),
+          RoundCue(atSecond: 30, text: 'step in, 1-2, exit'),
+          RoundCue(atSecond: 55, text: 'switch, step in, 1-2'),
+          RoundCue(atSecond: 80, text: 'exit'),
+          RoundCue(atSecond: 105, text: 'switch, reset'),
+        ],
+      ),
+    ],
+  ),
+  Workout(
+    id: 'fw_pendulum',
+    name: 'Pendulum Step',
+    type: TrainingType.footwork,
+    difficulty: Difficulty.intermediate,
+    description:
+        'Rock back out of range, then ride the return straight back in behind '
+        'the jab. Four rounds of rhythm on the pendulum step.',
+    rounds: [
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Find the bounce',
+        cues: [
+          RoundCue(atSecond: 4, text: 'bounce'),
+          RoundCue(atSecond: 30, text: 'step back'),
+          RoundCue(atSecond: 55, text: 'step back, reset'),
+          RoundCue(atSecond: 80, text: 'bounce'),
+          RoundCue(atSecond: 105, text: 'reset'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Ride it back in',
+        cues: [
+          RoundCue(atSecond: 4, text: 'step back'),
+          RoundCue(atSecond: 30, text: 'step in, 1'),
+          RoundCue(atSecond: 55, text: 'step back, step in, 1'),
+          RoundCue(atSecond: 80, text: 'pendulum'),
+          RoundCue(atSecond: 105, text: 'reset'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Pendulum on the beat',
+        cues: [
+          RoundCue(atSecond: 4, text: 'pendulum'),
+          RoundCue(atSecond: 30, text: 'pendulum, 1'),
+          RoundCue(atSecond: 55, text: 'bounce'),
+          RoundCue(atSecond: 80, text: 'pendulum, step in, 1'),
+          RoundCue(atSecond: 105, text: 'reset'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Put it together',
+        cues: [
+          RoundCue(atSecond: 4, text: 'bounce'),
+          RoundCue(atSecond: 30, text: 'pendulum'),
+          RoundCue(atSecond: 55, text: 'step back, step in, 1'),
+          RoundCue(atSecond: 80, text: 'pendulum, 1'),
+          RoundCue(atSecond: 105, text: 'reset'),
+        ],
+      ),
+    ],
+  ),
+  Workout(
+    id: 'fw_ring_general',
+    name: 'Ring General',
+    type: TrainingType.footwork,
+    difficulty: Difficulty.advanced,
+    description:
+        'Take the ring away from a moving target. Five rounds of cutting left '
+        'and right, stepping in behind the hands, and getting out clean.',
+    rounds: [
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Cut left',
+        cues: [
+          RoundCue(atSecond: 4, text: 'cut left'),
+          RoundCue(atSecond: 30, text: 'cut left, hold'),
+          RoundCue(atSecond: 55, text: 'cut left, pivot'),
+          RoundCue(atSecond: 80, text: 'step in, 1-2'),
+          RoundCue(atSecond: 105, text: 'exit'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Cut right',
+        cues: [
+          RoundCue(atSecond: 4, text: 'cut right'),
+          RoundCue(atSecond: 30, text: 'cut right, hold'),
+          RoundCue(atSecond: 55, text: 'cut right, pivot'),
+          RoundCue(atSecond: 80, text: 'step in, 1-2'),
+          RoundCue(atSecond: 105, text: 'exit'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Cut both ways',
+        cues: [
+          RoundCue(atSecond: 4, text: 'cut left'),
+          RoundCue(atSecond: 30, text: 'cut right'),
+          RoundCue(atSecond: 55, text: 'cut left, step in, 1-2'),
+          RoundCue(atSecond: 80, text: 'pivot, exit'),
+          RoundCue(atSecond: 105, text: 'hold'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Trap the corner',
+        cues: [
+          RoundCue(atSecond: 4, text: 'cut right'),
+          RoundCue(atSecond: 30, text: 'step in, 1-2'),
+          RoundCue(atSecond: 55, text: 'pivot, hold'),
+          RoundCue(atSecond: 80, text: 'cut left, 1-2'),
+          RoundCue(atSecond: 105, text: 'exit'),
+        ],
+      ),
+      RoundSpec(
+        workSeconds: 120,
+        restSeconds: 45,
+        focus: 'Run the ring',
+        cues: [
+          RoundCue(atSecond: 4, text: 'cut left, step in, 1-2'),
+          RoundCue(atSecond: 30, text: 'pivot, exit'),
+          RoundCue(atSecond: 55, text: 'cut right, step in, 1-2'),
+          RoundCue(atSecond: 80, text: 'pivot, hold'),
+          RoundCue(atSecond: 105, text: 'exit'),
+        ],
+      ),
+    ],
+  ),
 ];
 
 /// The footwork drill with this id, or null when nothing matches.

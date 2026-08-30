@@ -7,6 +7,11 @@ import 'package:boxer_os/widgets/workout_tile.dart';
 
 void main() {
   testWidgets('lists a tile for every footwork drill', (tester) async {
+    // Tall surface so the whole catalogue builds instead of scrolling lazily.
+    tester.view.physicalSize = const Size(1000, 4000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
     await tester.pumpWidget(const MaterialApp(home: FootworkPage()));
 
     expect(find.byType(WorkoutTile), findsNWidgets(footworkDrills.length));

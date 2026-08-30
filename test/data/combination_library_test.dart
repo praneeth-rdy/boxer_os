@@ -31,18 +31,22 @@ void main() {
     }
   });
 
-  test('every entry has a non-empty name, description and at least one tag', () {
-    for (final combination in combinationLibrary) {
-      expect(combination.name, isNotEmpty, reason: combination.id);
-      expect(combination.description, isNotEmpty, reason: combination.id);
-      expect(combination.tags, isNotEmpty, reason: combination.id);
-    }
-  });
+  test(
+    'every entry has a non-empty name, description and at least one tag',
+    () {
+      for (final combination in combinationLibrary) {
+        expect(combination.name, isNotEmpty, reason: combination.id);
+        expect(combination.description, isNotEmpty, reason: combination.id);
+        expect(combination.tags, isNotEmpty, reason: combination.id);
+      }
+    },
+  );
 
   test('difficulty counts are 15 beginner, 25 intermediate, 20 advanced', () {
     final counts = <Difficulty, int>{};
     for (final combination in combinationLibrary) {
-      counts[combination.difficulty] = (counts[combination.difficulty] ?? 0) + 1;
+      counts[combination.difficulty] =
+          (counts[combination.difficulty] ?? 0) + 1;
     }
 
     expect(counts[Difficulty.beginner], 15);
@@ -61,6 +65,27 @@ void main() {
     test('an unknown id returns null', () {
       expect(findCombination('nope'), isNull);
     });
+
+    test('c37 description does not assume a southpaw opponent', () {
+      final combination = findCombination('c37');
+
+      expect(
+        combination!.description,
+        'Land the two, then step off the line before they can answer.',
+      );
+    });
+
+    test('c41 is named for its two hooks, not five straight punches', () {
+      final combination = findCombination('c41');
+
+      expect(combination!.name, 'Five-punch flurry');
+    });
+
+    test('c57 is named for its uppercut', () {
+      final combination = findCombination('c57');
+
+      expect(combination!.name, 'Uppercut five');
+    });
   });
 
   group('combinationsWhere', () {
@@ -69,7 +94,9 @@ void main() {
 
       expect(beginners.length, 15);
       expect(
-        beginners.every((combination) => combination.difficulty == Difficulty.beginner),
+        beginners.every(
+          (combination) => combination.difficulty == Difficulty.beginner,
+        ),
         isTrue,
       );
     });
@@ -79,7 +106,9 @@ void main() {
 
       expect(offense, isNotEmpty);
       expect(
-        offense.every((combination) => combination.tags.contains(ComboTag.offense)),
+        offense.every(
+          (combination) => combination.tags.contains(ComboTag.offense),
+        ),
         isTrue,
       );
     });

@@ -5,8 +5,8 @@ import 'package:boxer_os/data/workout_library.dart';
 import 'package:boxer_os/models/training_type.dart';
 
 void main() {
-  test('footworkDrills has five drills', () {
-    expect(footworkDrills.length, 5);
+  test('footworkDrills has ten drills', () {
+    expect(footworkDrills.length, 10);
   });
 
   test('every id is unique, prefixed fw_ and not in workoutLibrary', () {

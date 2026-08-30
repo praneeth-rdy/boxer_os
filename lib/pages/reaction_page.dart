@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,6 +10,7 @@ import '../models/stance.dart';
 import '../providers/history_provider.dart';
 import '../providers/reaction_provider.dart';
 import '../providers/settings_provider.dart';
+import '../services/audio_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/pill_button.dart';
 import '../widgets/reaction_arena.dart';
@@ -27,23 +30,28 @@ class ReactionPage extends StatefulWidget {
 class _ReactionPageState extends State<ReactionPage> {
   late final ReactionProvider _reaction;
   late final HistoryProvider _history;
+  late final AudioService _audio;
 
   ReactionFormat _format = ReactionFormat.standard;
 
   /// The result already stored, so a rebuild cannot save it twice.
   DateTime? _savedAt;
 
+  /// The phase the beep was last judged against, so it fires once per trial.
+  ReactionPhase _cuedPhase = ReactionPhase.idle;
+
   @override
   void initState() {
     super.initState();
     _reaction = context.read<ReactionProvider>();
     _history = context.read<HistoryProvider>();
-    _reaction.addListener(_storeResult);
+    _audio = context.read<AudioService>();
+    _reaction.addListener(_onReactionChanged);
   }
 
   @override
   void dispose() {
-    _reaction.removeListener(_storeResult);
+    _reaction.removeListener(_onReactionChanged);
     if (_isRunning(_reaction.phase)) {
       // The tree is locked while this page unmounts, so notify after the frame.
       WidgetsBinding.instance.addPostFrameCallback((_) => _reaction.cancel());
@@ -77,6 +85,23 @@ class _ReactionPageState extends State<ReactionPage> {
         );
       },
     );
+  }
+
+  void _onReactionChanged() {
+    _storeResult();
+    _cueSound();
+  }
+
+  /// In sound mode the beep is the whole stimulus, so it lands on the change.
+  void _cueSound() {
+    final phase = _reaction.phase;
+    if (phase == _cuedPhase) {
+      return;
+    }
+    _cuedPhase = phase;
+    if (phase == ReactionPhase.stimulus && _reaction.isSoundMode) {
+      unawaited(_audio.playTick());
+    }
   }
 
   void _storeResult() {
@@ -151,9 +176,53 @@ class _ModePicker extends StatelessWidget {
           onSelectionChanged: (selection) => onFormatChanged(selection.first),
         ),
         const SizedBox(height: AppTheme.spaceLg),
-        for (final mode in ReactionMode.values) ...[
-          if (mode != ReactionMode.values.first)
-            const SizedBox(height: AppTheme.spaceMd),
+        _ModeGroup(
+          eyebrow: 'BOXING',
+          modes: [
+            for (final mode in ReactionMode.values)
+              if (mode.isBoxing) mode,
+          ],
+          onSelect: onSelect,
+        ),
+        const SizedBox(height: AppTheme.spaceLg),
+        _ModeGroup(
+          eyebrow: 'PURE SPEED',
+          modes: [
+            for (final mode in ReactionMode.values)
+              if (!mode.isBoxing) mode,
+          ],
+          onSelect: onSelect,
+        ),
+        const SizedBox(height: AppTheme.spaceMd),
+        Text(
+          'Defense uses your ${stance.label} stance: slip outside the jab.',
+          style: AppTheme.caption,
+        ),
+      ],
+    );
+  }
+}
+
+/// One eyebrow over the modes that sit under it.
+class _ModeGroup extends StatelessWidget {
+  const _ModeGroup({
+    required this.eyebrow,
+    required this.modes,
+    required this.onSelect,
+  });
+
+  final String eyebrow;
+  final List<ReactionMode> modes;
+  final void Function(ReactionMode) onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(eyebrow, style: AppTheme.label),
+        for (final mode in modes) ...[
+          const SizedBox(height: AppTheme.spaceMd),
           SkillCard(
             title: mode.label,
             description: mode.description,
@@ -161,11 +230,6 @@ class _ModePicker extends StatelessWidget {
             onTap: () => onSelect(mode),
           ),
         ],
-        const SizedBox(height: AppTheme.spaceMd),
-        Text(
-          'Defense uses your ${stance.label} stance: slip outside the jab.',
-          style: AppTheme.caption,
-        ),
       ],
     );
   }
@@ -175,6 +239,10 @@ class _ModePicker extends StatelessWidget {
     ReactionMode.direction => Icons.open_with_rounded,
     ReactionMode.defense => Icons.shield_rounded,
     ReactionMode.goNoGo => Icons.traffic_rounded,
+    ReactionMode.peripheral => Icons.scatter_plot_rounded,
+    ReactionMode.colour => Icons.palette_rounded,
+    ReactionMode.sequence => Icons.format_list_numbered_rounded,
+    ReactionMode.sound => Icons.hearing_rounded,
   };
 }
 
@@ -200,8 +268,12 @@ class _RunningView extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppTheme.radiusLg),
             child: ReactionArena(
               reaction: reaction,
-              onTap: ({direction, defense}) =>
-                  reaction.tap(direction: direction, defense: defense),
+              onTap: ({direction, defense, at, colour}) => reaction.tap(
+                direction: direction,
+                defense: defense,
+                at: at,
+                colour: colour,
+              ),
             ),
           ),
         ),

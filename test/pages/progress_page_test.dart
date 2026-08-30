@@ -154,12 +154,12 @@ void main() {
     },
   );
 
-  testWidgets('shows the History card with the book icon', (tester) async {
+  testWidgets('shows the History card with the history icon', (tester) async {
     await _pump(tester, []);
 
     final card = tester.widget<SkillCard>(find.byType(SkillCard));
     expect(card.title, 'History');
-    expect(card.icon, Icons.menu_book_rounded);
+    expect(card.icon, Icons.history_rounded);
   });
 
   testWidgets('History card caption reads empty with no logged sessions', (
@@ -269,6 +269,38 @@ void main() {
         find.text('Run the reaction trainer to see a trend.'),
         findsOneWidget,
       );
+    },
+  );
+
+  testWidgets(
+    'reaction section renders all eight mode tiles without overflow',
+    (tester) async {
+      final now = DateTime.now();
+      await _pump(
+        tester,
+        [
+          _session(
+            'a',
+            startedAt: now,
+            roundsCompleted: 1,
+            durationSeconds: 60,
+          ),
+        ],
+        reactions: [
+          for (final mode in ReactionMode.values)
+            _reactionResult(mode, 100, completedAt: now),
+        ],
+      );
+
+      // A RenderFlex overflow would surface as an exception during the pump.
+      expect(tester.takeException(), isNull);
+      final tiles = {
+        for (final tile in tester.widgetList<StatTile>(find.byType(StatTile)))
+          tile.label: tile,
+      };
+      for (final mode in ReactionMode.values) {
+        expect(tiles.containsKey(mode.label), isTrue, reason: mode.label);
+      }
     },
   );
 

@@ -11,10 +11,7 @@ void main() {
     return tester.pumpWidget(
       MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: child,
-        ),
+        child: Directionality(textDirection: TextDirection.ltr, child: child),
       ),
     );
   }

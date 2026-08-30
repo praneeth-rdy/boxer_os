@@ -68,6 +68,7 @@ Future<void> main() async {
       session: session,
       history: history,
       combos: combos,
+      audio: audio,
       voice: voice,
       notifications: notifications,
     ),
@@ -80,6 +81,7 @@ class BoxerOsApp extends StatelessWidget {
     required this.session,
     required this.history,
     required this.combos,
+    required this.audio,
     required this.voice,
     required this.notifications,
     super.key,
@@ -89,6 +91,7 @@ class BoxerOsApp extends StatelessWidget {
   final SessionProvider session;
   final HistoryProvider history;
   final CombosProvider combos;
+  final AudioService audio;
   final VoiceService voice;
   final NotificationService notifications;
 
@@ -102,6 +105,7 @@ class BoxerOsApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: combos),
         ChangeNotifierProvider(create: (_) => ReactionProvider()),
         ChangeNotifierProvider(create: (_) => ShellProvider()),
+        Provider<AudioService>.value(value: audio),
         Provider<VoiceService>.value(value: voice),
         Provider<NotificationService>.value(value: notifications),
       ],

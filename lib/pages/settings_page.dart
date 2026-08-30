@@ -11,6 +11,8 @@ import '../theme/app_theme.dart';
 import '../widgets/journal_field.dart';
 import '../widgets/pill_button.dart';
 import '../widgets/section_header.dart';
+import '../widgets/skill_card.dart';
+import 'about_page.dart';
 import 'onboarding_page.dart';
 
 /// Stance, level, cue toggles, the clear-history action and the version.
@@ -197,6 +199,12 @@ class _ReminderControls extends StatelessWidget {
           subtitle: "8 pm, only on days you haven't trained",
           isOn: settings.streakNudgeEnabled,
           apply: settings.setStreakNudgeEnabled,
+        ),
+        _PermissionSwitch(
+          title: 'Boxing days',
+          subtitle: 'A morning note on anniversaries and boxing days',
+          isOn: settings.eventRemindersEnabled,
+          apply: settings.setEventRemindersEnabled,
         ),
       ],
     );
@@ -437,16 +445,13 @@ class _About extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Boxer OS ${AppTheme.appVersion}', style: AppTheme.body),
-        SizedBox(height: AppTheme.spaceXs),
-        Text(
-          'Local-first. Nothing leaves your phone.',
-          style: AppTheme.bodyMuted,
-        ),
-      ],
+    return SkillCard(
+      title: 'About Boxer OS',
+      description: 'Version ${AppTheme.appVersion}, license, privacy, credits',
+      icon: Icons.info_outline_rounded,
+      onTap: () => Navigator.of(
+        context,
+      ).push(MaterialPageRoute<void>(builder: (_) => const AboutPage())),
     );
   }
 }
