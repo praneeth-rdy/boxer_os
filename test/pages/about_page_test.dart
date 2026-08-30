@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:boxer_os/data/app_identity.dart';
 import 'package:boxer_os/data/legends.dart';
+import 'package:boxer_os/data/wall_photos.dart';
 import 'package:boxer_os/pages/about_page.dart';
 import 'package:boxer_os/theme/app_theme.dart';
 import 'package:boxer_os/utils/external_links.dart' as external_links;
@@ -63,6 +64,84 @@ void main() {
         findsOneWidget,
       );
     }
+  });
+
+  testWidgets('renders a credit line for every gallery photo', (tester) async {
+    await _pump(tester);
+
+    for (final legend in legends) {
+      for (var index = 0; index < legend.gallery.length; index++) {
+        expect(
+          find.text(
+            '${legend.name}, archive ${index + 1}: '
+            '${legend.gallery[index].credit.author}, '
+            '${legend.gallery[index].credit.license}',
+          ),
+          findsOneWidget,
+          reason: '${legend.id} archive ${index + 1}',
+        );
+      }
+    }
+  });
+
+  testWidgets('renders a credit line for every wall photo', (tester) async {
+    await _pump(tester);
+
+    for (final photo in wallPhotos) {
+      expect(
+        find.text(
+          'Gym Wall, ${photo.id}: ${photo.credit.author}, '
+          '${photo.credit.license}',
+        ),
+        findsOneWidget,
+        reason: photo.id,
+      );
+    }
+  });
+
+  testWidgets('tapping a wall photo credit line opens its photo source', (
+    tester,
+  ) async {
+    final requested = <String>[];
+    external_links.launcher = (url) async {
+      requested.add(url);
+      return true;
+    };
+    await _pump(tester);
+
+    final firstPhoto = wallPhotos.first;
+    await tester.tap(
+      find.text(
+        'Gym Wall, ${firstPhoto.id}: ${firstPhoto.credit.author}, '
+        '${firstPhoto.credit.license}',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(requested, [firstPhoto.credit.source]);
+  });
+
+  testWidgets('tapping a gallery credit line opens its photo source', (
+    tester,
+  ) async {
+    final requested = <String>[];
+    external_links.launcher = (url) async {
+      requested.add(url);
+      return true;
+    };
+    await _pump(tester);
+
+    final firstLegend = legends.first;
+    final firstPhoto = firstLegend.gallery.first;
+    await tester.tap(
+      find.text(
+        '${firstLegend.name}, archive 1: '
+        '${firstPhoto.credit.author}, ${firstPhoto.credit.license}',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(requested, [firstPhoto.credit.source]);
   });
 
   testWidgets('tapping "Read the license" opens the license url', (

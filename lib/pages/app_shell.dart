@@ -40,7 +40,7 @@ class AppShell extends StatelessWidget {
             label: 'Skills',
           ),
           NavigationDestination(
-            icon: Icon(Icons.auto_stories_rounded),
+            icon: Icon(Icons.newspaper_rounded),
             label: 'Corner',
           ),
           NavigationDestination(

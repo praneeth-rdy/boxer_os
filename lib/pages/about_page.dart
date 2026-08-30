@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data/app_identity.dart';
 import '../data/legends.dart';
-import '../models/legend.dart';
+import '../data/wall_photos.dart';
 import '../theme/app_theme.dart';
 import '../utils/external_links.dart';
 import '../widgets/settle_in.dart';
@@ -165,30 +165,52 @@ class _Credits extends StatelessWidget {
           style: AppTheme.bodyMuted,
         ),
         const SizedBox(height: AppTheme.spaceMd),
-        for (final legend in legends) _PhotoCreditLine(legend: legend),
+        for (final legend in legends)
+          _CreditLine(
+            text:
+                '${legend.name}: ${legend.credit.author}, '
+                '${legend.credit.license}',
+            source: legend.credit.source,
+          ),
+        const SizedBox(height: AppTheme.spaceMd),
+        for (final legend in legends)
+          for (var index = 0; index < legend.gallery.length; index++)
+            _CreditLine(
+              text:
+                  '${legend.name}, archive ${index + 1}: '
+                  '${legend.gallery[index].credit.author}, '
+                  '${legend.gallery[index].credit.license}',
+              source: legend.gallery[index].credit.source,
+            ),
+        const SizedBox(height: AppTheme.spaceMd),
+        for (final photo in wallPhotos)
+          _CreditLine(
+            text:
+                'Gym Wall, ${photo.id}: ${photo.credit.author}, '
+                '${photo.credit.license}',
+            source: photo.credit.source,
+          ),
       ],
     );
   }
 }
 
-class _PhotoCreditLine extends StatelessWidget {
-  const _PhotoCreditLine({required this.legend});
+/// One credit, tappable through to the file page the photo came from.
+class _CreditLine extends StatelessWidget {
+  const _CreditLine({required this.text, required this.source});
 
-  final Legend legend;
+  final String text;
+  final String source;
 
   @override
   Widget build(BuildContext context) {
-    final credit = legend.credit;
     return GestureDetector(
       onTap: () {
-        openExternal(credit.source);
+        openExternal(source);
       },
       child: Padding(
         padding: const EdgeInsets.only(bottom: AppTheme.spaceXs),
-        child: Text(
-          '${legend.name}: ${credit.author}, ${credit.license}',
-          style: AppTheme.caption,
-        ),
+        child: Text(text, style: AppTheme.caption),
       ),
     );
   }

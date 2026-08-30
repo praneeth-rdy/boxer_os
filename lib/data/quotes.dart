@@ -504,6 +504,25 @@ const List<Quote> quotes = [
     author: 'Babe Ruth',
     sport: 'Baseball',
   ),
+  Quote(
+    text:
+        'What would be better than walking down any street in any city and '
+        'knowing you were the heavyweight champion of the world?',
+    author: 'Rocky Marciano',
+    sport: 'Boxing',
+  ),
+  Quote(
+    text:
+        'I have found no better way of avoiding race prejudice than to act '
+        'with people of other races as if prejudice did not exist.',
+    author: 'Jack Johnson',
+    sport: 'Boxing',
+  ),
+  Quote(
+    text: "I've been dreaming about this since I was a young girl.",
+    author: 'Katie Taylor',
+    sport: 'Boxing',
+  ),
 ];
 
 /// A surface that shows the quote of the day, each on its own sequence.

@@ -18,8 +18,8 @@ class LegendCard extends StatelessWidget {
   /// Whether this is the single highlighted card, wider and set in bigger type.
   final bool featured;
 
-  static const double _listRatio = 4 / 3;
-  static const double _featuredRatio = 16 / 10;
+  static const double _listRatio = 1;
+  static const double _featuredRatio = 4 / 3;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +79,7 @@ class LegendCard extends StatelessWidget {
   }
 }
 
-/// A legend's portrait, held to the top so the face stays in frame.
+/// A legend's portrait, cropped around its own focal point.
 class LegendPhoto extends StatelessWidget {
   const LegendPhoto({required this.legend, super.key});
 
@@ -90,7 +90,7 @@ class LegendPhoto extends StatelessWidget {
     return Image.asset(
       legend.imageAsset,
       fit: BoxFit.cover,
-      alignment: Alignment.topCenter,
+      alignment: legend.photoFocus,
       errorBuilder: (context, error, stack) =>
           const ColoredBox(color: AppTheme.surfaceRaised),
     );

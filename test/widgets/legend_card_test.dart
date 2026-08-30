@@ -22,6 +22,7 @@ const Legend _legend = Legend(
     license: 'Public domain',
     source: 'https://example.com',
   ),
+  gallery: [],
 );
 
 // The card is built for a list: it takes the width it is given and grows
@@ -53,20 +54,50 @@ void main() {
     expect(tapped, isTrue);
   });
 
-  testWidgets('featured uses a wider 16:10 aspect ratio', (tester) async {
+  testWidgets('featured uses a 4:3 aspect ratio', (tester) async {
     await tester.pumpWidget(
       _wrap(LegendCard(legend: _legend, onTap: () {}, featured: true)),
     );
 
     final aspect = tester.widget<AspectRatio>(find.byType(AspectRatio));
-    expect(aspect.aspectRatio, closeTo(16 / 10, 0.001));
+    expect(aspect.aspectRatio, closeTo(4 / 3, 0.001));
   });
 
-  testWidgets('not featured uses a 4:3 aspect ratio', (tester) async {
+  testWidgets('not featured uses a 1:1 aspect ratio', (tester) async {
     await tester.pumpWidget(_wrap(LegendCard(legend: _legend, onTap: () {})));
 
     final aspect = tester.widget<AspectRatio>(find.byType(AspectRatio));
-    expect(aspect.aspectRatio, closeTo(4 / 3, 0.001));
+    expect(aspect.aspectRatio, closeTo(1, 0.001));
+  });
+
+  testWidgets('the photo is cropped around the legend photoFocus', (
+    tester,
+  ) async {
+    const focused = Legend(
+      id: 'test-focus',
+      name: 'Test Boxer',
+      nickname: 'The Test',
+      years: 'born 1990',
+      country: 'Testland',
+      division: 'Heavyweight',
+      record: '10 wins, 0 losses',
+      hook: 'A hook line that describes the boxer for the card preview text.',
+      sections: [],
+      quoteIndexes: [],
+      takeaways: [],
+      imageAsset: 'assets/legends/ali.jpg',
+      credit: PhotoCredit(
+        author: 'Someone',
+        license: 'Public domain',
+        source: 'https://example.com',
+      ),
+      gallery: [],
+      photoFocus: Alignment.center,
+    );
+    await tester.pumpWidget(_wrap(LegendCard(legend: focused, onTap: () {})));
+
+    final image = tester.widget<Image>(find.byType(Image));
+    expect(image.alignment, Alignment.center);
   });
 
   testWidgets('the hook is capped at two lines', (tester) async {

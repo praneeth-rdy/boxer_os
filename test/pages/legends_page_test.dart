@@ -40,4 +40,19 @@ void main() {
     final story = tester.widget<LegendStoryPage>(find.byType(LegendStoryPage));
     expect(story.legend.id, legend.id);
   });
+
+  testWidgets(
+    'renders all twelve cards with no exceptions and each photo cropped '
+    "to its legend's photoFocus",
+    (tester) async {
+      await _pump(tester);
+
+      expect(tester.takeException(), isNull);
+      final images = tester.widgetList<Image>(find.byType(Image)).toList();
+      expect(images, hasLength(legends.length));
+      for (var index = 0; index < legends.length; index++) {
+        expect(images[index].alignment, legends[index].photoFocus);
+      }
+    },
+  );
 }

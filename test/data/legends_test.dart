@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:boxer_os/data/legends.dart';
@@ -18,6 +19,9 @@ const Map<String, String> _ownQuoteAuthor = {
   'pacquiao': 'Manny Pacquiao',
   'mayweather': 'Floyd Mayweather',
   'kom': 'Mary Kom',
+  'marciano': 'Rocky Marciano',
+  'johnson': 'Jack Johnson',
+  'taylor': 'Katie Taylor',
 };
 
 /// Every string field on [legend], flattened for the em-dash / en-dash sweep.
@@ -59,13 +63,19 @@ void main() {
       }
     });
 
-    test('every legend has 2 or 3 quote indexes within range', () {
+    test('every legend has 1 to 3 quote indexes within range', () {
       for (final legend in legends) {
-        expect(legend.quoteIndexes.length, anyOf(2, 3), reason: legend.id);
+        expect(legend.quoteIndexes.length, anyOf(1, 2, 3), reason: legend.id);
         for (final index in legend.quoteIndexes) {
           expect(index, greaterThanOrEqualTo(0), reason: legend.id);
           expect(index, lessThan(quotes.length), reason: legend.id);
         }
+      }
+    });
+
+    test('marciano, johnson and taylor each show exactly one quote', () {
+      for (final id in ['marciano', 'johnson', 'taylor']) {
+        expect(findLegend(id)!.quoteIndexes, hasLength(1), reason: id);
       }
     });
 
@@ -150,6 +160,45 @@ void main() {
       final start = legendOfTheWeek(DateTime(2026, 1, 2));
       final end = legendOfTheWeek(DateTime(2026, 1, 7));
       expect(start.id, end.id);
+    });
+
+    test('every legend has 2 or 3 gallery photos with assets on disk', () {
+      for (final legend in legends) {
+        expect(legend.gallery.length, anyOf(2, 3), reason: legend.id);
+        for (final photo in legend.gallery) {
+          expect(File(photo.asset).existsSync(), isTrue, reason: photo.asset);
+        }
+      }
+    });
+
+    test('every gallery photo has a non-empty caption and complete credit', () {
+      for (final legend in legends) {
+        for (final photo in legend.gallery) {
+          expect(photo.caption, isNotEmpty, reason: photo.asset);
+          expect(photo.credit.author, isNotEmpty, reason: photo.asset);
+          expect(photo.credit.license, isNotEmpty, reason: photo.asset);
+          expect(photo.credit.source, isNotEmpty, reason: photo.asset);
+        }
+      }
+    });
+
+    test('pubspec.yaml declares the assets/legends/gallery/ folder', () {
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+      expect(pubspec.contains('assets/legends/gallery/'), isTrue);
+    });
+
+    test('photoFocus defaults for most legends and is overridden for four', () {
+      const defaultFocus = Alignment(0, -0.8);
+      const overrides = {
+        'marciano': Alignment(0, -1),
+        'foreman': Alignment(0, -1),
+        'johnson': Alignment(0, -0.7),
+        'taylor': Alignment.center,
+      };
+      for (final legend in legends) {
+        final expected = overrides[legend.id] ?? defaultFocus;
+        expect(legend.photoFocus, expected, reason: legend.id);
+      }
     });
   });
 }

@@ -5,6 +5,7 @@ import 'package:boxer_os/data/legends.dart';
 import 'package:boxer_os/data/quotes.dart';
 import 'package:boxer_os/models/legend.dart';
 import 'package:boxer_os/pages/legend_story_page.dart';
+import 'package:boxer_os/widgets/gallery_strip.dart';
 import 'package:boxer_os/widgets/quote_card.dart';
 
 Legend get _ali => legends.firstWhere((legend) => legend.id == 'ali');
@@ -131,4 +132,17 @@ void main() {
       expect(tester.takeException(), isNull);
     }
   });
+
+  testWidgets(
+    'shows the archive gallery strip with all of the legend\'s photos',
+    (tester) async {
+      final legend = _ali;
+      await _pump(tester, legend);
+
+      expect(find.text('FROM THE ARCHIVE'), findsOneWidget);
+      expect(find.byType(GalleryStrip), findsOneWidget);
+      final strip = tester.widget<GalleryStrip>(find.byType(GalleryStrip));
+      expect(strip.photos, legend.gallery);
+    },
+  );
 }

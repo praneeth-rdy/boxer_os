@@ -5,6 +5,7 @@ import '../models/legend.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_theme.dart';
 import '../utils/external_links.dart';
+import '../widgets/gallery_strip.dart';
 import '../widgets/legend_card.dart';
 import '../widgets/quote_card.dart';
 import '../widgets/settle_in.dart';
@@ -72,7 +73,7 @@ class _LegendStoryPageState extends State<LegendStoryPage> {
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.all(AppTheme.spaceLg),
+            padding: const EdgeInsets.symmetric(vertical: AppTheme.spaceLg),
             sliver: SliverList.list(
               children: [
                 for (var index = 0; index < blocks.length; index++)
@@ -95,25 +96,57 @@ class _LegendStoryPageState extends State<LegendStoryPage> {
 
 List<Widget> _storyBlocks(Legend legend) {
   final blocks = <Widget>[
-    _StoryHeader(legend: legend),
-    _FactsStrip(legend: legend),
+    _inColumn(_StoryHeader(legend: legend)),
+    _inColumn(_FactsStrip(legend: legend)),
   ];
   final quoteSections = _quoteSections(legend.quoteIndexes.length);
   for (var index = 0; index < legend.sections.length; index++) {
-    blocks.add(_StorySectionBlock(section: legend.sections[index]));
+    blocks.add(_inColumn(_StorySectionBlock(section: legend.sections[index])));
     final slot = quoteSections.indexOf(index + 1);
     if (slot >= 0) {
-      blocks.add(QuoteCard(quote: quotes[legend.quoteIndexes[slot]]));
+      blocks.add(
+        _inColumn(QuoteCard(quote: quotes[legend.quoteIndexes[slot]])),
+      );
     }
   }
-  blocks.add(_Takeaways(takeaways: legend.takeaways));
-  blocks.add(_PhotoCreditBlock(credit: legend.credit));
+  if (legend.gallery.isNotEmpty) {
+    blocks.add(_Gallery(photos: legend.gallery));
+  }
+  blocks.add(_inColumn(_Takeaways(takeaways: legend.takeaways)));
+  blocks.add(_inColumn(_PhotoCreditBlock(credit: legend.credit)));
   return blocks;
 }
 
+/// Holds a block to the text column; the gallery is the one block that bleeds.
+Widget _inColumn(Widget child) => Padding(
+  padding: const EdgeInsets.symmetric(horizontal: AppTheme.spaceLg),
+  child: child,
+);
+
 /// Which section each pull quote follows, so the quotes break up the reading.
-List<int> _quoteSections(int quoteCount) =>
-    (quoteCount > 2 ? const [1, 3, 4] : const [1, 2]).take(quoteCount).toList();
+List<int> _quoteSections(int quoteCount) => switch (quoteCount) {
+  1 => const [2],
+  2 => const [1, 3],
+  _ => const [1, 3, 4].take(quoteCount).toList(),
+};
+
+class _Gallery extends StatelessWidget {
+  const _Gallery({required this.photos});
+
+  final List<GalleryPhoto> photos;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _inColumn(const Text('FROM THE ARCHIVE', style: AppTheme.label)),
+        const SizedBox(height: AppTheme.spaceMd),
+        GalleryStrip(photos: photos),
+      ],
+    );
+  }
+}
 
 class _StoryHeader extends StatelessWidget {
   const _StoryHeader({required this.legend});

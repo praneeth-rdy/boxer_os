@@ -4,8 +4,8 @@ import 'package:boxer_os/data/quotes.dart';
 import 'package:boxer_os/models/quote.dart';
 
 void main() {
-  test('has exactly 81 quotes, each with text, author and sport', () {
-    expect(quotes.length, 81);
+  test('has exactly 84 quotes, each with text, author and sport', () {
+    expect(quotes.length, 84);
     for (final quote in quotes) {
       expect(quote.text, isNotEmpty);
       expect(quote.author, isNotEmpty);

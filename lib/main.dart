@@ -10,6 +10,7 @@ import 'providers/reaction_provider.dart';
 import 'providers/session_provider.dart';
 import 'providers/settings_provider.dart';
 import 'providers/shell_provider.dart';
+import 'providers/wall_provider.dart';
 import 'services/audio_service.dart';
 import 'services/cue_controller.dart';
 import 'services/haptics_service.dart';
@@ -17,6 +18,7 @@ import 'services/notification_service.dart';
 import 'services/reminder_scheduler.dart';
 import 'services/voice_service.dart';
 import 'services/wake_lock_service.dart';
+import 'services/wallpaper_service.dart';
 import 'theme/app_theme.dart';
 
 /// Held for the life of the process so the cue subscriptions stay alive.
@@ -84,6 +86,7 @@ class BoxerOsApp extends StatelessWidget {
     required this.audio,
     required this.voice,
     required this.notifications,
+    this.wallpaper = const WallpaperService(),
     super.key,
   });
 
@@ -94,6 +97,7 @@ class BoxerOsApp extends StatelessWidget {
   final AudioService audio;
   final VoiceService voice;
   final NotificationService notifications;
+  final WallpaperService wallpaper;
 
   @override
   Widget build(BuildContext context) {
@@ -105,9 +109,11 @@ class BoxerOsApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: combos),
         ChangeNotifierProvider(create: (_) => ReactionProvider()),
         ChangeNotifierProvider(create: (_) => ShellProvider()),
+        ChangeNotifierProvider(create: (_) => WallProvider()..load()),
         Provider<AudioService>.value(value: audio),
         Provider<VoiceService>.value(value: voice),
         Provider<NotificationService>.value(value: notifications),
+        Provider<WallpaperService>.value(value: wallpaper),
       ],
       child: MaterialApp(
         title: 'Boxer OS',

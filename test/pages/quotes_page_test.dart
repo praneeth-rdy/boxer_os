@@ -7,7 +7,7 @@ import 'package:boxer_os/widgets/quote_card.dart';
 
 final Finder _boxingChip = find.widgetWithText(ChoiceChip, 'Boxing');
 
-const int _boxingCount = 52;
+const int _boxingCount = 55;
 
 Future<void> _pump(WidgetTester tester) async {
   // Tall enough that the lazy ListView.builder lays out every card, so the
@@ -21,7 +21,7 @@ Future<void> _pump(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('shows the header and all 81 quotes with All selected', (
+  testWidgets('shows the header and all quotes with All selected', (
     tester,
   ) async {
     await _pump(tester);
@@ -31,7 +31,7 @@ void main() {
   });
 
   testWidgets(
-    "the Boxing chip filters to 52 quotes, counting 'Boxing trainer'",
+    "the Boxing chip filters to 55 quotes, counting 'Boxing trainer'",
     (tester) async {
       await _pump(tester);
 

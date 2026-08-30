@@ -13,6 +13,7 @@ import '../widgets/settle_in.dart';
 import '../widgets/skill_card.dart';
 import 'calendar_page.dart';
 import 'facts_page.dart';
+import 'gym_wall_page.dart';
 import 'legend_story_page.dart';
 import 'legends_page.dart';
 import 'quotes_page.dart';
@@ -63,7 +64,7 @@ class CornerPage extends StatelessWidget {
               child: SkillCard(
                 title: 'All legends',
                 description: 'Twelve fighters and what they teach.',
-                icon: Icons.auto_stories_rounded,
+                icon: Icons.emoji_events_rounded,
                 onTap: () => _push(context, const LegendsPage()),
               ),
             ),
@@ -110,7 +111,7 @@ class CornerPage extends StatelessWidget {
               index: 4,
               child: SkillCard(
                 title: 'Quotes',
-                description: '81 lines from boxers and other athletes.',
+                description: '84 lines from boxers and other athletes.',
                 icon: Icons.format_quote_rounded,
                 onTap: () => _push(context, const QuotesPage()),
               ),
@@ -123,6 +124,21 @@ class CornerPage extends StatelessWidget {
                 description: '40 facts and records from the ring.',
                 icon: Icons.lightbulb_outline_rounded,
                 onTap: () => _push(context, const FactsPage()),
+              ),
+            ),
+            const SizedBox(height: AppTheme.spaceXl),
+            const SettleIn(
+              index: 5,
+              child: Text('WALL', style: AppTheme.label),
+            ),
+            const SizedBox(height: AppTheme.spaceMd),
+            SettleIn(
+              index: 5,
+              child: SkillCard(
+                title: 'Gym Wall',
+                description: 'Posters for your home and lock screen.',
+                icon: Icons.wallpaper_rounded,
+                onTap: () => _push(context, const GymWallPage()),
               ),
             ),
           ],

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../models/legend.dart';
 import '../utils/date_helpers.dart';
 
@@ -75,6 +77,42 @@ const List<Legend> legends = [
       license: 'Public domain',
       source: 'https://commons.wikimedia.org/wiki/File:Muhammad_Ali_NYWTS.jpg',
     ),
+    gallery: [
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/ali_1.jpg',
+        caption:
+            'Backing Sonny Liston into the ropes, Miami Beach, 25 February '
+            '1964.',
+        credit: PhotoCredit(
+          author: 'Associated Press',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Ali_punches_Liston_1964_AP_photo.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/ali_2.jpg',
+        caption: 'In Amsterdam, 1966, at the height of his speed.',
+        credit: PhotoCredit(
+          author: 'Anefo',
+          license: 'CC0',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Bokser_Cassius_Clay_(USA_(1966)_(Mohammed_Ali),_Bestanddeelnr_924-3060.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/ali_3.jpg',
+        caption:
+            'On the cover of El Grafico, March 1964, a week after beating '
+            'Liston.',
+        credit: PhotoCredit(
+          author: 'El Gráfico',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Cassius_Clay_-_El_Gráfico_2317.jpg',
+        ),
+      ),
+    ],
   ),
   Legend(
     id: 'tyson',
@@ -130,7 +168,7 @@ const List<Legend> legends = [
             'discipline is doing what you hate to do as if you loved it.',
       ),
     ],
-    quoteIndexes: [5, 46, 61],
+    quoteIndexes: [5, 46],
     takeaways: [
       'Find the person who will hold you to a standard, and stay '
           'close to them.',
@@ -140,11 +178,45 @@ const List<Legend> legends = [
     ],
     imageAsset: 'assets/legends/tyson.jpg',
     credit: PhotoCredit(
-      author: 'Super Festivals',
-      license: 'CC BY 2.0',
+      author: 'Unknown (promotional portrait)',
+      license: 'Public domain',
       source:
-          'https://commons.wikimedia.org/wiki/File:Mike_Tyson_Photo_Op_GalaxyCon_Austin_2023.jpg',
+          'https://commons.wikimedia.org/wiki/File:Mike_Tyson_Early_Portrait_high_res.jpg',
     ),
+    gallery: [
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/tyson_1.jpg',
+        caption:
+            'The night he became champion: hitting Trevor Berbick, 22 '
+            'November 1986.',
+        credit: PhotoCredit(
+          author: 'Douglas C. Pizac',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Mike_Tyson_hitting_Trevor_Berbick(cropped).jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/tyson_2.jpg',
+        caption: 'February 1986, nineteen years old and eighteen fights in.',
+        credit: PhotoCredit(
+          author: 'Unknown',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Mike_Tyson_in_February_1986.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/tyson_3.jpg',
+        caption: 'Against Jesse Ferguson, 1986.',
+        credit: PhotoCredit(
+          author: 'Unknown',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Mike_Tyson_vs_Jesse_Ferguson.jpg',
+        ),
+      ),
+    ],
   ),
   Legend(
     id: 'frazier',
@@ -213,6 +285,30 @@ const List<Legend> legends = [
       source:
           'https://commons.wikimedia.org/wiki/File:Joe_Frazier_reading_newspaper_cropped.jpg',
     ),
+    gallery: [
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/frazier_1.jpg',
+        caption: 'Arriving at Amsterdam Schiphol, 1971.',
+        credit: PhotoCredit(
+          author: 'Hans Peters for Anefo',
+          license: 'CC0',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Aankomst_van_Joe_Frazier_op_Schiphol,_Bestanddeelnr_924-5567.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/frazier_2.jpg',
+        caption:
+            'On stage with his band in the Netherlands, 1971. Frazier sang '
+            'between fights.',
+        credit: PhotoCredit(
+          author: 'W. Punt for Anefo',
+          license: 'CC0',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Joe_Frazier_en_zijn_groep_tijdens_het_concert,_Bestanddeelnr_924-5576.jpg',
+        ),
+      ),
+    ],
   ),
   Legend(
     id: 'foreman',
@@ -281,6 +377,32 @@ const List<Legend> legends = [
       source:
           'https://commons.wikimedia.org/wiki/File:George_Foreman_(1973).jpg',
     ),
+    gallery: [
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/foreman_1.jpg',
+        caption:
+            'At Schiphol in 1973, the year he took the title from Frazier.',
+        credit: PhotoCredit(
+          author: 'Bert Verhoeff / Anefo',
+          license: 'CC0',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Bokskampioen_Georg_Foreman_op_Schiphol,_Georg_Foreman_met_Romeo_Ommel,_Bestanddeelnr_926-2855.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/foreman_2.jpg',
+        caption:
+            'Commemorated on a 1968 stamp after his Olympic gold in Mexico '
+            'City.',
+        credit: PhotoCredit(
+          author: 'Government of Sharjah',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Boxing---George-Foreman.jpg',
+        ),
+      ),
+    ],
+    photoFocus: Alignment(0, -1),
   ),
   Legend(
     id: 'marciano',
@@ -331,7 +453,7 @@ const List<Legend> legends = [
             'matched by a heavyweight champion.',
       ),
     ],
-    quoteIndexes: [10, 42],
+    quoteIndexes: [81],
     takeaways: [
       'If you are not the most gifted, be the best conditioned. It '
           'is the one thing fully in your control.',
@@ -346,6 +468,42 @@ const List<Legend> legends = [
       source:
           'https://commons.wikimedia.org/wiki/File:Rocky_Marciano_(cropped).jpg',
     ),
+    gallery: [
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/marciano_1.jpg',
+        caption:
+            'The right hand that knocked out Jersey Joe Walcott in the '
+            'thirteenth round, Philadelphia, 23 September 1952.',
+        credit: PhotoCredit(
+          author: 'Herb Scharfman',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Rocky_Marciano_knocks_out_Jersey_Joe_Walcott,_1952.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/marciano_2.jpg',
+        caption: 'Training before the Walcott fight, 1952.',
+        credit: PhotoCredit(
+          author: 'United Press International',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Rocky_Marciano_and_Jersey_Joe_Walcott_training_1952_press_photo.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/marciano_3.jpg',
+        caption:
+            'Walcott down in the first round of the rematch, Chicago, 1953.',
+        credit: PhotoCredit(
+          author: 'Unknown',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Jersey_Joe_Walcott_hits_the_deck_1953.jpg',
+        ),
+      ),
+    ],
+    photoFocus: Alignment(0, -1),
   ),
   Legend(
     id: 'robinson',
@@ -407,11 +565,45 @@ const List<Legend> legends = [
     ],
     imageAsset: 'assets/legends/robinson.jpg',
     credit: PhotoCredit(
-      author: 'ACME Newspictures',
+      author: 'Unknown',
       license: 'Public domain',
       source:
-          'https://commons.wikimedia.org/wiki/File:Sugar_Ray_Robinson_1947.jpg',
+          'https://commons.wikimedia.org/wiki/File:Sugar_Ray_Robinson_1950.jpg',
     ),
+    gallery: [
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/robinson_1.jpg',
+        caption:
+            'Blocking Jake LaMotta in their sixth fight, Chicago, 14 February '
+            '1951.',
+        credit: PhotoCredit(
+          author: 'Unknown',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Sugar_Ray_Robinson_vs_Jake_LaMotta_1951_(1).jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/robinson_2.jpg',
+        caption: 'The referee raises his hand: middleweight champion, 1951.',
+        credit: PhotoCredit(
+          author: 'Unknown',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Sugar_Ray_Robinson_vs_Jake_LaMotta_1951_(2).jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/robinson_3.jpg',
+        caption: 'With Kid Gavilan, 1949.',
+        credit: PhotoCredit(
+          author: 'Unknown',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Kid_Gavilán_and_Sugar_Ray_Robinson_1949.jpg',
+        ),
+      ),
+    ],
   ),
   Legend(
     id: 'louis',
@@ -478,6 +670,38 @@ const List<Legend> legends = [
       source:
           'https://commons.wikimedia.org/wiki/File:Joe_Louis_by_van_Vechten.jpg',
     ),
+    gallery: [
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/louis_1.jpg',
+        caption: 'The rematch: Schmeling down at Yankee Stadium, 22 June 1938.',
+        credit: PhotoCredit(
+          author: 'Associated Press',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Joe_Louis_knocks_out_Max_Schmeling.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/louis_2.jpg',
+        caption: 'Standing over Schmeling, 1938.',
+        credit: PhotoCredit(
+          author: 'Associated Press',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Joe_Louis_standing_over_Max_Schmeling_1938.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/louis_3.jpg',
+        caption: 'Harlem celebrates the night of the rematch, June 1938.',
+        credit: PhotoCredit(
+          author: 'Unknown',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Celebrations_in_Harlem_after_Joe_Louis_knocked_out_Max_Schmeling_(5).jpg',
+        ),
+      ),
+    ],
   ),
   Legend(
     id: 'johnson',
@@ -529,7 +753,7 @@ const List<Legend> legends = [
             'the century at the same time.',
       ),
     ],
-    quoteIndexes: [31, 37],
+    quoteIndexes: [82],
     takeaways: [
       'Defence is not passive. Johnson won by making opponents miss '
           'and pay.',
@@ -545,6 +769,43 @@ const List<Legend> legends = [
       source:
           'https://commons.wikimedia.org/wiki/File:Jack_Johnson,_1915_(edit).jpg',
     ),
+    gallery: [
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/johnson_1.jpg',
+        caption:
+            'The Fight of the Century against James Jeffries, Reno, 4 July '
+            '1910.',
+        credit: PhotoCredit(
+          author: 'Unknown',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Johnson-Jeffries_Prize_Fight,_4_July_1910.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/johnson_2.jpg',
+        caption: 'The fight poster, 1910.',
+        credit: PhotoCredit(
+          author: 'Unknown',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Jack_Johnson_vs_Jim_Jeffries_-_4_July_1910_World_Heavyweight_Boxing_poster.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/johnson_3.jpg',
+        caption:
+            'Crowds outside Times Tower in New York waiting for news of the '
+            'fight.',
+        credit: PhotoCredit(
+          author: 'The Pictorial News Company',
+          license: 'Public domain',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Crowd_awaits_news_of_Jeffries_-_Johnson.JPG',
+        ),
+      ),
+    ],
+    photoFocus: Alignment(0, -0.7),
   ),
   Legend(
     id: 'pacquiao',
@@ -596,7 +857,7 @@ const List<Legend> legends = [
             'before the performance.',
       ),
     ],
-    quoteIndexes: [56, 26],
+    quoteIndexes: [56],
     takeaways: [
       'Start where you are, however small. A flyweight became a '
           'welterweight champion.',
@@ -610,6 +871,38 @@ const List<Legend> legends = [
       source:
           'https://commons.wikimedia.org/wiki/File:Former_senator_Manny_Pacquiao_speaks_in_event_(10-01-2025)_(cropped).jpg',
     ),
+    gallery: [
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/pacquiao_1.jpg',
+        caption: 'In the ring, 2008.',
+        credit: PhotoCredit(
+          author: 'Shubert Ciencia from Nueva Ecija, Philippines',
+          license: 'CC BY 2.0',
+          source:
+              'https://commons.wikimedia.org/wiki/File:I_Am_Manny_Pacquiao_(2409886528).jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/pacquiao_2.jpg',
+        caption: 'The ring before Pacquiao vs Hatton, Las Vegas, 2009.',
+        credit: PhotoCredit(
+          author: 'Jamie Davies',
+          license: 'CC BY 2.0',
+          source:
+              'https://commons.wikimedia.org/wiki/File:MGM_Pacquiao_vs._Hatton_pre-fight_ring.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/pacquiao_3.jpg',
+        caption: 'MGM Grand Garden Arena before Pacquiao vs Thurman, 2019.',
+        credit: PhotoCredit(
+          author: 'Toohool',
+          license: 'CC BY-SA 4.0',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Pacquiao_vs._Thurman_arena.jpg',
+        ),
+      ),
+    ],
   ),
   Legend(
     id: 'mayweather',
@@ -670,11 +963,44 @@ const List<Legend> legends = [
     ],
     imageAsset: 'assets/legends/mayweather.jpg',
     credit: PhotoCredit(
-      author: 'DeWalt Power Tools Fight Night Club 2010',
+      author: 'Chamber of Fear',
       license: 'CC BY-SA 2.0',
       source:
-          'https://commons.wikimedia.org/wiki/File:Floyd_Mayweather_Jr_2011.jpg',
+          'https://commons.wikimedia.org/wiki/File:Floyd_Mayweather,_Jr._2011.jpg',
     ),
+    gallery: [
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/mayweather_1.jpg',
+        caption: 'At a press conference, 2011.',
+        credit: PhotoCredit(
+          author: 'Chamber of Fear',
+          license: 'CC BY-SA 2.0',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Floyd_Mayweather,_Jr._2011.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/mayweather_2.jpg',
+        caption:
+            'The MGM Grand billboard for Mayweather vs Pacquiao, May 2015.',
+        credit: PhotoCredit(
+          author: 'Jimmy Harris',
+          license: 'CC BY 2.0',
+          source:
+              'https://commons.wikimedia.org/wiki/File:MGM_Mayweather_Pacquiao.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/mayweather_3.jpg',
+        caption: 'Working the pads at a DeWalt event, 2011.',
+        credit: PhotoCredit(
+          author: 'DEWALT POWER TOOLS FIGHT NIGHT CLUB 2010',
+          license: 'CC BY-SA 2.0',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Floyd_Mayweather,_Jr._at_DeWalt_event_(5888721735).jpg',
+        ),
+      ),
+    ],
   ),
   Legend(
     id: 'kom',
@@ -726,7 +1052,7 @@ const List<Legend> legends = [
             'girls in Manipur first.',
       ),
     ],
-    quoteIndexes: [60, 20],
+    quoteIndexes: [60],
     takeaways: [
       'Start before permission. Kom trained in secret until the '
           'results spoke.',
@@ -742,6 +1068,40 @@ const List<Legend> legends = [
       source:
           'https://commons.wikimedia.org/wiki/File:Mary_Kom_-_British_High_Commission,_Delhi,_27_July_2011.jpg',
     ),
+    gallery: [
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/kom_1.jpg',
+        caption:
+            'Honoured by the Prime Minister after the London 2012 bronze, New '
+            'Delhi.',
+        credit: PhotoCredit(
+          author: "Prime Minister's Office",
+          license: 'GODL-India',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Manmohan_Singh_honours_Smt._Mary_Kom,_the_London_Olympic_Bronze_Medal_winner,_at_the_All_India_Conference_of_Directors_GeneralInspectors_General_of_Police_-2012,_in_New_Delhi._The_Union_Home_Minister.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/kom_2.jpg',
+        caption: 'With the President of India.',
+        credit: PhotoCredit(
+          author: "President's Secretariat",
+          license: 'GODL-India',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Mary_Kom_with_Pranab.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/kom_3.jpg',
+        caption: 'With the London 2012 medal winners, New Delhi, August 2012.',
+        credit: PhotoCredit(
+          author: 'Ministry of Youth Affairs and Sports',
+          license: 'GODL-India',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Ajay_Maken_with_the_Medal_Winners_of_London_Olympics_2012,_at_the_felicitation_function,_organised_by_the_Ministry_of_Youth_Affairs_&_Sports,_at_Major_Dhyan_Chand_National_Stadium,_in_New_Delhi_on_August_16,_2012.jpg',
+        ),
+      ),
+    ],
   ),
   Legend(
     id: 'taylor',
@@ -792,7 +1152,7 @@ const List<Legend> legends = [
             'raised her voice in public; the record does it for her.',
       ),
     ],
-    quoteIndexes: [21, 66],
+    quoteIndexes: [83],
     takeaways: [
       'Do the work before the sport is ready for you. Taylor boxed '
           'before girls were allowed to.',
@@ -805,8 +1165,41 @@ const List<Legend> legends = [
       author: 'cormac70',
       license: 'CC BY 2.0',
       source:
-          'https://commons.wikimedia.org/wiki/File:Katie_Taylor_2012_(cropped).jpg',
+          'https://commons.wikimedia.org/wiki/File:Katie_Taylor_2012_(2).jpg',
     ),
+    gallery: [
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/taylor_1.jpg',
+        caption: 'Boxing at the London 2012 Olympics.',
+        credit: PhotoCredit(
+          author: 'cormac70',
+          license: 'CC BY 2.0',
+          source:
+              'https://commons.wikimedia.org/wiki/File:2012_Summer_Olympics_Katie_Taylor_2.jpg',
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/taylor_2.jpg',
+        caption: 'The moment it was over, London 2012.',
+        credit: PhotoCredit(
+          author: 'cormac70',
+          license: 'CC BY 2.0',
+          source:
+              "https://commons.wikimedia.org/wiki/File:Katie_Taylor_2012_Summer_Olympics_It's_All_Over.jpg",
+        ),
+      ),
+      GalleryPhoto(
+        asset: 'assets/legends/gallery/taylor_3.jpg',
+        caption: 'Walking to the ring in London, 2012.',
+        credit: PhotoCredit(
+          author: 'cormac70',
+          license: 'CC BY 2.0',
+          source:
+              'https://commons.wikimedia.org/wiki/File:Katie_Taylor_Enters_2012_Summer_Olympics.jpg',
+        ),
+      ),
+    ],
+    photoFocus: Alignment.center,
   ),
 ];
 
