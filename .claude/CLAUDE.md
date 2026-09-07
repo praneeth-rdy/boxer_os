@@ -186,8 +186,10 @@ Known gaps and open findings live in `docs/backlog.md` and `docs/review-log.md`,
 # Tiered model workflow - read before doing any work
 
 This repo uses a strict three-tier split so that the expensive model never touches raw code or
-build logs. The main session runs on **Claude Fable 5** (set in `~/.claude/settings.json`);
-that session is the Architect. **Haiku is never used here - Sonnet is the floor.**
+build logs. The main session runs on **Claude Fable 5** (set in `.claude/settings.json`, which
+travels with the repo; machine-personal overrides go in the gitignored
+`.claude/settings.local.json`); that session is the Architect. **Haiku is never used here -
+Sonnet is the floor.**
 
 | Tier | Model | Runs as | Does | Never does |
 |---|---|---|---|---|
