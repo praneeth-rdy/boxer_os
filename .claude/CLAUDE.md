@@ -156,6 +156,15 @@ These apply to every tier and every language in the repo (Dart, Kotlin, tests, d
 - Arrange / act / assert, one behaviour per test, no logic in tests.
 - Mock at the boundary (SharedPreferences, platform channels, clock), never by editing production code.
 
+## Project memory (`.claude/memory/`)
+
+Machine-independent agent memory, shared through git. Read every file there before
+substantial work; update the relevant file when a durable decision or preference lands
+(one fact per file, short and current, no em-dashes); commit memory changes with docs
+commits. The `docs/` knowledge base holds the project's state; `.claude/memory/` holds the
+working context that is not derivable from it (owner preferences, dropped ideas, device
+quirks, what the owner said no to).
+
 ## Knowledge base (`docs/`)
 
 `docs/` is the project's running memory. Read `docs/README.md` for the reading order and update
