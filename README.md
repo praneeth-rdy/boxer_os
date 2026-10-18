@@ -83,7 +83,15 @@ memory entry that has settled gets promoted into the matching `docs/` file and d
 change unstaged; the owner reviews and commits.
 
 `docs/README.md` has the full protocol and the reading order. It is written for any assistant
-(Claude Code, Codex, an editor agent) or any human; tool-specific wiring lives in `.claude/`.
+(Claude Code, Codex, an editor agent) or any human; tool-specific wiring lives in `.claude/`
+and `.codex/`.
+
+## Codex
+
+Open this repository in Codex, or run `codex` from its root. `AGENTS.md` points to the shared
+instructions and memory; `.codex/config.toml` provides project defaults for sandboxing and
+approvals. Model selection stays in your personal settings. See [.codex/README.md](.codex/README.md)
+for setup details.
 
 ## Agent workflow (Claude Code)
 

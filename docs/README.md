@@ -12,8 +12,9 @@ Two layers, and the difference matters:
   `memory/README.md` has the full protocol.
 
 Both layers are tool-agnostic: they are written for a human, for Claude Code, for Codex, for any
-assistant. Tool-specific wiring (agent definitions, handoff packages, the tiered workflow) lives
-in `.claude/` and nowhere else.
+assistant. Claude Code wiring (agent definitions, handoff packages, the tiered workflow) lives
+in `.claude/`. Codex project configuration and setup live in `.codex/`; `AGENTS.md` is its
+instruction entry point. Both tools use the same `memory/` and `docs/`.
 
 | File | What it holds | Who updates it, when |
 |---|---|---|

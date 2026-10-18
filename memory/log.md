@@ -2,6 +2,19 @@
 
 Newest first. One entry per work session: what changed, what it means for the next session.
 
+## 2026-10-18 Codex repository setup
+
+Read project memory, product and architecture docs, backlog, review findings and conventions.
+Added `.codex/config.toml` with workspace-write sandboxing, on-request approvals and sandbox
+network access disabled; model selection stays personal. `.codex/README.md` documents trust,
+configuration precedence and tooling cache permissions. `AGENTS.md` defines Codex's direct
+implementation workflow while reusing the shared conventions and memory. Updated setup
+pointers in `README.md` and `docs/README.md`. Corrected the stale current snapshot against git:
+earlier memory, CI and coverage changes were already committed; the checkout started clean.
+Verified TOML parsing, `codex features list` configuration loading and `git diff --check`.
+The CLI does not support `--strict-config` with `features`. No application code or dependencies
+changed; application checks were not rerun.
+
 ## 2026-10-18 Tests: flake fixed, CI hardened, coverage run
 
 Asked to "set up unit tests and run them on PRs": both already existed (91 test files, CI from

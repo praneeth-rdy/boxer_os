@@ -1,0 +1,7 @@
+# Repository defaults. Keep model selection and machine-specific paths in user config.
+# approval_policy = "never"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = false

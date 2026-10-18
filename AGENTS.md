@@ -1,6 +1,6 @@
 # Working on Boxer OS
 
-Pointers only. Nothing is defined here, so nothing here can go stale: follow the links.
+Start with the shared references below; Codex-specific workflow guidance follows them.
 
 Applies to any assistant (Claude Code, Codex, an editor agent) and to humans.
 
@@ -27,3 +27,16 @@ done. Promote settled notes into `docs/` and delete them from `memory/`.
 - Work on the checked-out branch. Do not branch, stage, commit, stash, or push: the owner
   reviews and commits.
 - No new dependencies without the owner agreeing to one by name and version.
+
+## Codex workflow
+
+Project defaults and setup: `.codex/config.toml` and `.codex/README.md`.
+
+- Apply the shared coding conventions in `.claude/CLAUDE.md`. Its tiered model workflow,
+  Claude agent definitions and `/build` command are Claude Code specific.
+- Implement, test and review directly in Codex. Delegate only when explicitly requested.
+- Use `memory/` and `docs/` as the shared project memory; do not create a second Codex memory.
+- Run checks appropriate to the change using the commands in `.claude/CLAUDE.md`. Report
+  what was run and distinguish earlier recorded results from checks run in this session.
+- Follow `memory/notes/owner-preferences.md` and `memory/notes/device-testing.md` for product
+  choices and physical-device work. Resume phone testing only when the owner says it is connected.
