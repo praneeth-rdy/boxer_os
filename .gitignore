@@ -51,3 +51,6 @@ android/*.keystore
 
 # Play Store assets, generated locally
 /screenshots/
+
+# Claude Code: machine-personal overrides stay out of git
+.claude/settings.local.json

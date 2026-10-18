@@ -169,6 +169,11 @@ planning or implementing anything; rewrite `current.md` and add a `log.md` entry
 lands. An entry that has settled is promoted into the matching `docs/` file and deleted from
 `memory/`: a fact lives in one place only.
 
+`.claude/memory/` is the older Claude-specific memory from the September sessions (owner
+preferences, run decisions, what was said no to), shared through git. Read it alongside
+`memory/current.md`. New running notes go to `memory/`; anything durable in `.claude/memory/`
+is a candidate for promotion into `docs/` or `memory/notes/`.
+
 `docs/` is the settled knowledge, curated by the Architect. Read `docs/README.md` for the
 reading order and update rules. In short:
 
@@ -189,8 +194,10 @@ Anything still unsettled lives in `memory/`.
 # Tiered model workflow - read before doing any work
 
 This repo uses a strict three-tier split so that the expensive model never touches raw code or
-build logs. The main session runs on **Claude Fable 5** (set in `~/.claude/settings.json`);
-that session is the Architect. **Haiku is never used here - Sonnet is the floor.**
+build logs. The main session runs on **Claude Fable 5** (set in `.claude/settings.json`, which
+travels with the repo; machine-personal overrides go in the gitignored
+`.claude/settings.local.json`); that session is the Architect. **Haiku is never used here -
+Sonnet is the floor.**
 
 | Tier | Model | Runs as | Does | Never does |
 |---|---|---|---|---|
