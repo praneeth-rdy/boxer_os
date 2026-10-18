@@ -61,12 +61,37 @@ See `docs/release.md` for signing an upload build for the Play Console.
 | Tests | `flutter test` |
 | Smoke build | `flutter build apk --debug` |
 
-The `docs/` folder is the project's running memory: `docs/product.md` has the vision and V1
-scope, `docs/architecture.md` how the code is put together, `docs/backlog.md` the plan, and
-`docs/decisions.md` and `docs/review-log.md` the history of design calls and review findings.
-This repo also runs on a tiered agent workflow: an Architect plans and writes handoff packages,
-an Opus worker implements each one, and a Sonnet worker writes tests and runs smoke checks;
-`/build <goal>` runs that pipeline end to end.
+## Project memory
+
+The repo carries its own memory so that nobody, human or AI assistant, has to re-read the
+codebase to find out where things stand. Two folders, and they are the first thing to read:
+
+| Folder | Layer | Holds |
+|---|---|---|
+| `memory/` | running memory | `current.md` (what is in flight right now), `log.md` (dated entries, newest first), `notes/` (one topic per file: gotchas, device behaviour, dead ends, open questions). Anyone may write here. |
+| `docs/` | settled knowledge | `product.md` (vision and V1 scope), `architecture.md` (how the code is put together), `backlog.md` (the plan), `decisions.md` and `review-log.md` (design calls and review findings), `release.md` (signing and Play checklist). |
+
+The split is simple: `memory/` is what is still moving, `docs/` is what has stopped moving. A
+memory entry that has settled gets promoted into the matching `docs/` file and deleted from
+`memory/`, so a fact only ever lives in one place.
+
+**Before you start:** read `memory/current.md` and the last few entries of `memory/log.md`, then
+`docs/product.md` and `docs/architecture.md`, then your tool's conventions file.
+
+**When you finish:** rewrite `memory/current.md`, add an entry to `memory/log.md`, update
+`docs/architecture.md` if the structure changed, and mark the backlog item done. Leave the
+change unstaged; the owner reviews and commits.
+
+`docs/README.md` has the full protocol and the reading order. It is written for any assistant
+(Claude Code, Codex, an editor agent) or any human; tool-specific wiring lives in `.claude/`.
+
+## Agent workflow (Claude Code)
+
+This repo also runs on a tiered agent workflow: an Architect plans and writes handoff packages
+under `.claude/handoffs/`, an Opus worker implements each one, and a Sonnet worker writes tests
+and runs smoke checks; `/build <goal>` runs that pipeline end to end. Conventions, commands and
+the tier rules are in `.claude/CLAUDE.md`. Using a different assistant is fine: read
+`.claude/CLAUDE.md` for the coding conventions, and follow the memory protocol above.
 
 ## Status
 

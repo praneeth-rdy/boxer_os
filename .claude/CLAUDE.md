@@ -27,8 +27,9 @@ Tagline: "Train. Fight. Improve. Repeat."
 - Lints: `flutter_lints` via `analysis_options.yaml`.
 - Version: `pubspec.yaml` `0.1.0+1`. Once an in-app version string exists it lives on
   `AppTheme.appVersion` and is kept in step with `pubspec.yaml`.
-- Current state (2026-08-29, evening): V1 is built (runs 1 to 6 under `.claude/handoffs/`);
-  `docs/backlog.md` lists what is done and what is left. Tests live under `test/` mirroring `lib/`.
+- Current state: `memory/current.md`, always. It is rewritten at the end of every work session,
+  so trust it over any date written into this file. `docs/backlog.md` lists what is done and what
+  is left; tests live under `test/` mirroring `lib/`.
 
 ## Commands
 
@@ -156,10 +157,20 @@ These apply to every tier and every language in the repo (Dart, Kotlin, tests, d
 - Arrange / act / assert, one behaviour per test, no logic in tests.
 - Mock at the boundary (SharedPreferences, platform channels, clock), never by editing production code.
 
-## Knowledge base (`docs/`)
+## Memory (`memory/`) and knowledge base (`docs/`)
 
-`docs/` is the project's running memory. Read `docs/README.md` for the reading order and update
-rules. In short:
+Both are tool-agnostic and written for any reader, human or assistant. The protocol lives in
+`memory/README.md` and `docs/README.md`; do not restate it here.
+
+`memory/` is the running memory: `current.md` (what is in flight), `log.md` (dated entries,
+newest first), `notes/<slug>.md` (one gotcha, device behaviour or open question per file). Every
+tier may write to it. Read `memory/current.md` and the last entries of `memory/log.md` before
+planning or implementing anything; rewrite `current.md` and add a `log.md` entry when the work
+lands. An entry that has settled is promoted into the matching `docs/` file and deleted from
+`memory/`: a fact lives in one place only.
+
+`docs/` is the settled knowledge, curated by the Architect. Read `docs/README.md` for the
+reading order and update rules. In short:
 
 - `docs/product.md` - what the app is for, the information architecture and the V1 scope. Read it before designing anything.
 - `docs/architecture.md` - how the code is put together. Developer agents update it in the same
@@ -171,6 +182,7 @@ rules. In short:
 - `docs/release.md` - signing and the Play checklist.
 
 Known gaps and open findings live in `docs/backlog.md` and `docs/review-log.md`, not here.
+Anything still unsettled lives in `memory/`.
 
 ---
 
@@ -199,7 +211,10 @@ that session is the Architect. **Haiku is never used here - Sonnet is the floor.
 
 ### Routing rules for the Architect
 
-1. **Any change under `lib/` or `android/` goes to the `developer` agent** with a handoff package - even one-liners. You may edit `.claude/`, docs, and `pubspec.yaml` metadata directly.
+0. **Open `memory/current.md` and the top of `memory/log.md` first**, before planning. Close every
+   run by rewriting `current.md` and adding one `log.md` entry; promote anything that has settled
+   into `docs/` and delete it from `memory/`.
+1. **Any change under `lib/` or `android/` goes to the `developer` agent** with a handoff package - even one-liners. You may edit `.claude/`, `docs/`, `memory/`, and `pubspec.yaml` metadata directly.
 2. **Tests, mocks, smoke checks, deprecation sweeps, formatting, log triage -> `assistant` agent.**
 3. **Goals needing >= 2 packages or an implement -> test -> fix loop:** the `tiered-build` workflow
    (`.claude/workflows/tiered-build.js`) does this deterministically, but the Workflow tool only

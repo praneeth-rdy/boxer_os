@@ -5,6 +5,11 @@ on:
     branches: [main]
   pull_request:
 
+# A new push to a PR supersedes the run in flight.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -20,6 +25,7 @@ jobs:
           flutter-version: "3.41.2"
           cache: true
       - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed lib test
       - run: flutter analyze
       - run: flutter test
       - run: flutter build apk --debug

@@ -258,7 +258,13 @@ void main() {
       final card = tester.widget<LegendCard>(find.byType(LegendCard));
       expect(card.legend.id, legend.id);
       expect(card.featured, isTrue);
-      expect(find.text(legend.name), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(LegendCard),
+          matching: find.text(legend.name),
+        ),
+        findsOneWidget,
+      );
 
       providers.session.reset();
     },

@@ -2,6 +2,28 @@
 
 Newest first. One entry per decision that a later reader might want to revisit.
 
+## 2026-10-18 Anything that reads the time takes an injectable clock
+
+`SessionProvider` and `ReactionProvider` already took `{DateTime Function()? clock}` defaulting
+to `DateTime.now`; `NotificationService` read `tz.TZDateTime.now(tz.local)` directly and its
+scheduling could only be tested by probing 23:59 and 00:00, with a flake window at the minute
+boundary. It now takes the same seam and converts with `tz.TZDateTime.from(_clock(), tz.local)`.
+The rule going forward: a class that reads the time exposes `clock`, named and shaped like the
+providers', so its tests pin an instant instead of racing the wall clock. Pages that rotate
+content by date (`quoteFor`, `legendOfTheWeek`) are tested with scoped finders for the same
+reason, after `home_page_test.dart` failed on a week where two rotations met on one legend.
+
+## 2026-10-18 Presentational widgets and enum-only models stay untested
+
+`test/` mirrors `lib/`, but 15 files are deliberately left without a mirror: widgets that only
+lay out their inputs (`section_header`, `stat_tile`, `empty_state`, `skill_card`, `session_tile`,
+`event_card`, `event_tile`, `fact_card`, `filter_chip_row`, `journal_field`, `milestone_badge`,
+`phone_preview`, `poster_renderer`, `rating_input`, `combo_sheet`) and models with no logic
+beyond their constructor (`legend`, `wall_photo`, `milestone`, `quote`, `boxing_fact`,
+`session_phase`, `app_theme`, `main`). A test there would restate the code. The rule: a test
+covers logic (parsing, fallbacks, derived values, error containment, state-dependent rendering);
+a file with none gets no file, and the page tests that compose these widgets cover them in use.
+
 ## 2026-08-30 Live wallpaper activation goes through the OEM screen, and that is fine
 
 On Vivo (Android 16) the change-live-wallpaper intent is handled by the theme app: a preview

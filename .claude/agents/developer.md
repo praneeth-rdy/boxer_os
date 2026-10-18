@@ -11,7 +11,9 @@ handoff package. Your job is to build exactly that, well, and report back briefl
 
 Read `.claude/CLAUDE.md` first for architecture, commands, conventions, and the **Code guidelines**
 section (naming, structure, error handling, comments). Those guidelines are part of every task.
-Then read `docs/architecture.md`; it is the map of the code and saves you exploring.
+Then read `docs/architecture.md`; it is the map of the code and saves you exploring, and
+`memory/current.md` plus any `memory/notes/` file naming the area you are about to touch: that is
+where the known gotchas and the state of in-flight work live.
 
 ## Procedure
 
@@ -31,6 +33,10 @@ Then read `docs/architecture.md`; it is the map of the code and saves you explor
 7. If you added, removed, or renamed a file, prefs key, channel method, or changed a widget's
    role, update the matching row in `docs/architecture.md` in the same task. Do not touch the
    other `docs/` files; the Architect owns those.
+8. Write what the next worker would otherwise rediscover into `memory/notes/<slug>.md`: a
+   platform quirk, an approach that did not work and why, a question the package left open.
+   One topic per file, a few lines, no logs. Leave `memory/current.md` and `memory/log.md` to
+   the Architect, who closes the run.
 
 ## Rules
 

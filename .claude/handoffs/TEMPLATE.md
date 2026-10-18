@@ -10,6 +10,7 @@ One paragraph. What the user gets when this is done.
 
 ## Context the worker needs
 - Pointers to the relevant `CLAUDE.md` sections and files, and *why* they matter. No code dumps.
+- Any `memory/notes/` file that bears on this change, named explicitly.
 
 ## Files
 - `lib/...` - create | modify - what changes in one line

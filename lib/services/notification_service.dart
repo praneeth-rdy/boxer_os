@@ -5,6 +5,9 @@ import 'package:timezone/timezone.dart' as tz;
 
 /// Schedules the local reminder notifications; every call fails soft.
 class NotificationService {
+  NotificationService({DateTime Function()? clock})
+    : _clock = clock ?? DateTime.now;
+
   static const int dailyReminderId = 1;
   static const int streakNudgeId = 2;
   static const int eventReminderId = 3;
@@ -22,6 +25,7 @@ class NotificationService {
     ),
   );
 
+  final DateTime Function() _clock;
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
@@ -115,7 +119,7 @@ class NotificationService {
       return Future.value(false);
     }
     final scheduled = tz.TZDateTime.from(at, tz.local);
-    if (!scheduled.isAfter(tz.TZDateTime.now(tz.local))) {
+    if (!scheduled.isAfter(tz.TZDateTime.from(_clock(), tz.local))) {
       return Future.value(false);
     }
     return _schedule(id: id, at: scheduled, title: title, body: body);
@@ -166,7 +170,7 @@ class NotificationService {
   }
 
   tz.TZDateTime _nextOccurrence(int hour, int minute) {
-    final now = tz.TZDateTime.now(tz.local);
+    final now = tz.TZDateTime.from(_clock(), tz.local);
     final today = tz.TZDateTime(
       tz.local,
       now.year,

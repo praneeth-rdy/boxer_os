@@ -12,7 +12,11 @@ never have to read build output or write boilerplate.
 Read `.claude/CLAUDE.md` for project layout, commands, conventions, and the **Code guidelines**
 section. Test code and sweeps follow the same naming and comment rules as production code.
 `docs/architecture.md` lists every file, prefs key, and channel method; use it instead of
-exploring `lib/`. Do not edit anything under `docs/`.
+exploring `lib/`. Check `memory/current.md` and `memory/notes/` for known quirks before you
+conclude that a failure is new. Do not edit anything under `docs/`. You may add a
+`memory/notes/<slug>.md` file for something a later run would otherwise rediscover (a flaky
+test, a device or toolchain quirk, a pre-existing failure and its cause): a few lines, no logs.
+`memory/current.md` and `memory/log.md` belong to the Architect.
 
 ## Kinds of tasks you'll get
 
