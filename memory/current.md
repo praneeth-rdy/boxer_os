@@ -30,3 +30,5 @@ which is the last open item before a release build.
 
 - `review-log.md` R1-05: session screen, bells, haptics and TTS still need a face-up device
   check. Same phone session as R-03.
+- Owner has not yet confirmed the "jab" pronunciation after the forced en-US voice fix.
+  Same phone session.

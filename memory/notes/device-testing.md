@@ -1,6 +1,6 @@
 # Device testing
 
-The owner's phone is the reference device: Vivo, Android 16, a text-only launcher. An emulator
+The owner's phone is the reference device: Vivo I2214, Android 16, 1080x2400, a text-only launcher. An emulator
 cannot settle bells, haptics, TTS timing or wallpaper behaviour, so anything in those areas is
 "assumed" until it has run on that phone.
 

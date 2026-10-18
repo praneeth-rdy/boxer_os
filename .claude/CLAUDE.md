@@ -169,11 +169,6 @@ planning or implementing anything; rewrite `current.md` and add a `log.md` entry
 lands. An entry that has settled is promoted into the matching `docs/` file and deleted from
 `memory/`: a fact lives in one place only.
 
-`.claude/memory/` is the older Claude-specific memory from the September sessions (owner
-preferences, run decisions, what was said no to), shared through git. Read it alongside
-`memory/current.md`. New running notes go to `memory/`; anything durable in `.claude/memory/`
-is a candidate for promotion into `docs/` or `memory/notes/`.
-
 `docs/` is the settled knowledge, curated by the Architect. Read `docs/README.md` for the
 reading order and update rules. In short:
 

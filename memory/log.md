@@ -25,3 +25,12 @@ lives in `memory/README.md`, `docs/README.md` and the repo `README.md`; `AGENTS.
 pointer file for assistants that do not read `.claude/`. `.claude/CLAUDE.md`, both agent
 definitions and the handoff template now reference it rather than restating it, so every tier
 reads memory on entry and writes on exit. No source change; `lib/` and `android/` untouched.
+
+## 2026-08-29 to 2026-08-30 (backfilled from the retired .claude/memory on 2026-10-18)
+
+Scaffold to V1 in ten tiered-workflow runs over two days: core loop, skills, history, experience
+(audio, voice, combos 2.0, onboarding, reminders, motion), reaction drills, release signing,
+then content (quotes and facts, legends, calendar, four more reaction drills, license, Corner
+tab, Gym Wall and the live wallpaper). Committed in batches ending `7f94de9 feat: v1`. Upload
+keystore created 2026-08-29; non-secret facts in `docs/release.md`, password only in
+`android/key.properties`. Device-verified on the owner's Vivo I2214 throughout.

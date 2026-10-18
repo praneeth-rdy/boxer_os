@@ -2,6 +2,14 @@
 
 Newest first. One entry per decision that a later reader might want to revisit.
 
+## 2026-10-18 Three UI rules from the August device reviews, recorded late
+
+Settled with the owner on 2026-08-29 and 2026-08-30 and previously held only in
+`.claude/memory/`, now deleted: no text over photos (unreadable on the archive shots, so cards
+put text below the image); buttons are design-system components (`SkillCard` rows, pills),
+never an outlined pill with an icon or bare text; the Corner and All-legends icons are newspaper
+and trophy, the book icon having been disliked.
+
 ## 2026-10-18 Anything that reads the time takes an injectable clock
 
 `SessionProvider` and `ReactionProvider` already took `{DateTime Function()? clock}` defaulting
